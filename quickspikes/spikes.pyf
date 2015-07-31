@@ -1,0 +1,41 @@
+!    -*- f90 -*-
+! compile to python module with CFLAGS='-std=c99' f2py -c spikes.pyf spikes.c
+python module _spikes
+interface
+   subroutine spike_times(out, samples, nsamples, thresh, window)
+     intent(c) spike_times
+     intent(c)
+     integer*2 intent(out) :: out(nsamples)
+     double precision intent(in) :: samples(nsamples)
+     integer intent(hide), depend(samples) :: nsamples = len(samples)
+     double precision intent(in) :: thresh
+     integer intent(in) :: window
+   end subroutine spike_times
+
+   subroutine extract_spikes(out, samples, nsamples, times, ntimes, windowstart, windowstop)
+     intent(c) extract_spikes
+     intent(c)
+     double precision intent(out) :: out(ntimes,windowstart+windowstop)
+     double precision intent(in) :: samples(nsamples)
+     integer intent(hide), depend(samples) :: nsamples = len(samples)
+     integer intent(in) :: times(ntimes)
+     integer intent(hide), depend(times) :: ntimes = len(times)
+     integer intent(in) :: windowstart
+     integer intent(in) :: windowstop
+   end subroutine extract_spikes
+
+   subroutine extract_subthreshold(out, samples, nsamples, times, ntimes, vthresh, dvthresh, skip)
+     intent(c) extract_subthreshold
+     intent(c)
+     double precision intent(out) :: out(nsamples)
+     double precision intent(in) :: samples(nsamples)
+     integer intent(hide), depend(samples) :: nsamples = len(samples)
+     integer intent(in) :: times(ntimes)
+     integer intent(hide), depend(times) :: ntimes = len(times)
+     double precision intent(in) :: vthresh
+     double precision intent(in) :: dvthresh
+     integer intent(in) :: skip
+   end subroutine extract_subthreshold
+
+end interface
+end python module _spikes

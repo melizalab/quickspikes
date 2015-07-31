@@ -16,7 +16,7 @@ The algorithm is designed to be efficient for events on the order of 10-20 sampl
 
 ### Use
 
-The algorithm is implemented in portable ANSI C code, which you can include in your own project, and there is an `f2py` wrapper for use in python. You can get a python package from PyPI:
+The algorithm is written in cython. You can get a python package from PyPI:
 
     pip install quickspikes
 
@@ -24,7 +24,7 @@ Or to build from a copy of the repository:
 
     setup.py install
 
-
+There is also a reference copy of an ANSI C implementation and an `f2py` wrapper in `src/`. This algorithm is slightly less efficient and flexible, but may give better results if included directly in a C codebase.
 
 ### License
 

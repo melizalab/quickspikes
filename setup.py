@@ -19,17 +19,13 @@ except ImportError:
 compiler_settings = {
     'include_dirs' : [numpy_include]
     }
-_spikes = Extension('quickspikes.spikez', sources=['quickspikes/spikez' + SUFFIX],
+_spikes = Extension('quickspikes.spikes', sources=['quickspikes/spikes' + SUFFIX],
                     **compiler_settings)
-
 
 setup(
     name = 'quickspikes',
     version = '1.0.0',
-    packages = find_packages(exclude=["*test*"]),
-    # ext_modules = [Extension('_spikes',sources=['quickspikes/spikes.pyf',
-    #                                             'quickspikes/spikes.c'],
-    #                          extra_compile_args=['-std=c99'])],
+    packages=find_packages(exclude=["*test*"]),
     ext_modules = [_spikes],
     cmdclass = {'build_ext': build_ext},
 
@@ -42,5 +38,5 @@ setup(
     author = "Dan Meliza",
     maintainer = "Dan Meliza",
     maintainer_email = "dan AT the domain 'meliza.org'",
-    # test_suite = 'nose.collector',
+    test_suite = 'nose.collector',
     )

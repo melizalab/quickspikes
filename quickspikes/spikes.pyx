@@ -14,7 +14,7 @@ cdef inline bint compare_sign(double x, double y):
     """return True iff ((x > 0) && (y > 0)) || ((x < 0) && (y < 0))"""
     return ((x > 0) and (y > 0)) or ((x < 0) and (y < 0))
 
-cdef class detect_spikes:
+cdef class detector:
     """Detect spikes in a continuous stream of samples.
 
     This implementation allows samples to be sent to the detector in blocks, and

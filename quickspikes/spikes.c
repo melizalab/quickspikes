@@ -249,8 +249,8 @@ class __Pyx_FakeReference {
 #define _USE_MATH_DEFINES
 #endif
 #include <math.h>
-#define __PYX_HAVE__quickspikes__spikez
-#define __PYX_HAVE_API__quickspikes__spikez
+#define __PYX_HAVE__quickspikes__spikes
+#define __PYX_HAVE_API__quickspikes__spikes
 #include "pythread.h"
 #include "string.h"
 #include "stdlib.h"
@@ -445,7 +445,7 @@ static const char *__pyx_filename;
 
 
 static const char *__pyx_f[] = {
-  "quickspikes/spikez.pyx",
+  "quickspikes/spikes.pyx",
   "stringsource",
 };
 struct __pyx_memoryview_obj;
@@ -541,40 +541,40 @@ typedef volatile __pyx_atomic_int_type __pyx_atomic_int;
 
 
 /*--- Type declarations ---*/
-struct __pyx_obj_11quickspikes_6spikez_detect_spikes;
+struct __pyx_obj_11quickspikes_6spikes_detector;
 struct __pyx_array_obj;
 struct __pyx_MemviewEnum_obj;
 struct __pyx_memoryview_obj;
 struct __pyx_memoryviewslice_obj;
 
-/* "quickspikes/spikez.pyx":8
+/* "quickspikes/spikes.pyx":8
  * Created Wed Jul 24 09:26:36 2013
  * """
  * cdef enum DetectorState:             # <<<<<<<<<<<<<<
  *     BELOW_THRESHOLD = 1
  *     BEFORE_PEAK = 2
  */
-enum __pyx_t_11quickspikes_6spikez_DetectorState {
-  __pyx_e_11quickspikes_6spikez_BELOW_THRESHOLD = 1,
-  __pyx_e_11quickspikes_6spikez_BEFORE_PEAK = 2,
-  __pyx_e_11quickspikes_6spikez_AFTER_PEAK = 3
+enum __pyx_t_11quickspikes_6spikes_DetectorState {
+  __pyx_e_11quickspikes_6spikes_BELOW_THRESHOLD = 1,
+  __pyx_e_11quickspikes_6spikes_BEFORE_PEAK = 2,
+  __pyx_e_11quickspikes_6spikes_AFTER_PEAK = 3
 };
 
-/* "quickspikes/spikez.pyx":17
+/* "quickspikes/spikes.pyx":17
  *     return ((x > 0) and (y > 0)) or ((x < 0) and (y < 0))
  * 
- * cdef class detect_spikes:             # <<<<<<<<<<<<<<
+ * cdef class detector:             # <<<<<<<<<<<<<<
  *     """Detect spikes in a continuous stream of samples.
  * 
  */
-struct __pyx_obj_11quickspikes_6spikez_detect_spikes {
+struct __pyx_obj_11quickspikes_6spikes_detector {
   PyObject_HEAD
   double thresh;
   double scaled_thresh;
   double prev_val;
   int n_after;
   int n_after_crossing;
-  enum __pyx_t_11quickspikes_6spikez_DetectorState state;
+  enum __pyx_t_11quickspikes_6spikes_DetectorState state;
 };
 
 
@@ -1055,8 +1055,8 @@ static PyObject *__pyx_memoryview_assign_item_from_object(struct __pyx_memoryvie
 static PyObject *__pyx_memoryviewslice_convert_item_to_object(struct __pyx_memoryviewslice_obj *__pyx_v_self, char *__pyx_v_itemp); /* proto*/
 static PyObject *__pyx_memoryviewslice_assign_item_from_object(struct __pyx_memoryviewslice_obj *__pyx_v_self, char *__pyx_v_itemp, PyObject *__pyx_v_value); /* proto*/
 
-/* Module declarations from 'quickspikes.spikez' */
-static PyTypeObject *__pyx_ptype_11quickspikes_6spikez_detect_spikes = 0;
+/* Module declarations from 'quickspikes.spikes' */
+static PyTypeObject *__pyx_ptype_11quickspikes_6spikes_detector = 0;
 static PyTypeObject *__pyx_array_type = 0;
 static PyTypeObject *__pyx_MemviewEnum_type = 0;
 static PyTypeObject *__pyx_memoryview_type = 0;
@@ -1066,7 +1066,7 @@ static PyObject *strided = 0;
 static PyObject *indirect = 0;
 static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
-static CYTHON_INLINE int __pyx_f_11quickspikes_6spikez_compare_sign(double, double); /*proto*/
+static CYTHON_INLINE int __pyx_f_11quickspikes_6spikes_compare_sign(double, double); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char *, char *); /*proto*/
 static void *__pyx_align_pointer(void *, size_t); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo *); /*proto*/
@@ -1100,10 +1100,10 @@ static void __pyx_memoryview_refcount_objects_in_slice(char *, Py_ssize_t *, Py_
 static void __pyx_memoryview_slice_assign_scalar(__Pyx_memviewslice *, int, size_t, void *, int); /*proto*/
 static void __pyx_memoryview__slice_assign_scalar(char *, Py_ssize_t *, Py_ssize_t *, int, size_t, void *); /*proto*/
 static __Pyx_TypeInfo __Pyx_TypeInfo_double = { "double", NULL, sizeof(double), { 0 }, 0, 'R', 0, 0 };
-#define __Pyx_MODULE_NAME "quickspikes.spikez"
-int __pyx_module_is_main_quickspikes__spikez = 0;
+#define __Pyx_MODULE_NAME "quickspikes.spikes"
+int __pyx_module_is_main_quickspikes__spikes = 0;
 
-/* Implementation of 'quickspikes.spikez' */
+/* Implementation of 'quickspikes.spikes' */
 static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_ValueError;
 static PyObject *__pyx_builtin_MemoryError;
@@ -1112,9 +1112,9 @@ static PyObject *__pyx_builtin_Ellipsis;
 static PyObject *__pyx_builtin_TypeError;
 static PyObject *__pyx_builtin_id;
 static PyObject *__pyx_builtin_IndexError;
-static int __pyx_pf_11quickspikes_6spikez_13detect_spikes___init__(struct __pyx_obj_11quickspikes_6spikez_detect_spikes *__pyx_v_self, double __pyx_v_thresh, int __pyx_v_n_after); /* proto */
-static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_2scale_thresh(struct __pyx_obj_11quickspikes_6spikez_detect_spikes *__pyx_v_self, double __pyx_v_mean, double __pyx_v_sd); /* proto */
-static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __pyx_obj_11quickspikes_6spikez_detect_spikes *__pyx_v_self, __Pyx_memviewslice __pyx_v_samples); /* proto */
+static int __pyx_pf_11quickspikes_6spikes_8detector___init__(struct __pyx_obj_11quickspikes_6spikes_detector *__pyx_v_self, double __pyx_v_thresh, int __pyx_v_n_after); /* proto */
+static PyObject *__pyx_pf_11quickspikes_6spikes_8detector_2scale_thresh(struct __pyx_obj_11quickspikes_6spikes_detector *__pyx_v_self, double __pyx_v_mean, double __pyx_v_sd); /* proto */
+static PyObject *__pyx_pf_11quickspikes_6spikes_8detector_4send(struct __pyx_obj_11quickspikes_6spikes_detector *__pyx_v_self, __Pyx_memviewslice __pyx_v_samples); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_array___pyx_pf_15View_dot_MemoryView_5array_4__dealloc__(struct __pyx_array_obj *__pyx_v_self); /* proto */
@@ -1147,7 +1147,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_20
 static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_22copy_fortran(struct __pyx_memoryview_obj *__pyx_v_self); /* proto */
 static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewslice___dealloc__(struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView_16_memoryviewslice_4base___get__(struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
-static PyObject *__pyx_tp_new_11quickspikes_6spikez_detect_spikes(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_11quickspikes_6spikes_detector(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_array(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_Enum(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_memoryview(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -1306,7 +1306,7 @@ static PyObject *__pyx_tuple__15;
 static PyObject *__pyx_tuple__16;
 static PyObject *__pyx_tuple__17;
 
-/* "quickspikes/spikez.pyx":13
+/* "quickspikes/spikes.pyx":13
  *     AFTER_PEAK = 3
  * 
  * cdef inline bint compare_sign(double x, double y):             # <<<<<<<<<<<<<<
@@ -1314,19 +1314,19 @@ static PyObject *__pyx_tuple__17;
  *     return ((x > 0) and (y > 0)) or ((x < 0) and (y < 0))
  */
 
-static CYTHON_INLINE int __pyx_f_11quickspikes_6spikez_compare_sign(double __pyx_v_x, double __pyx_v_y) {
+static CYTHON_INLINE int __pyx_f_11quickspikes_6spikes_compare_sign(double __pyx_v_x, double __pyx_v_y) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
   __Pyx_RefNannySetupContext("compare_sign", 0);
 
-  /* "quickspikes/spikez.pyx":15
+  /* "quickspikes/spikes.pyx":15
  * cdef inline bint compare_sign(double x, double y):
  *     """return True iff ((x > 0) && (y > 0)) || ((x < 0) && (y < 0))"""
  *     return ((x > 0) and (y > 0)) or ((x < 0) and (y < 0))             # <<<<<<<<<<<<<<
  * 
- * cdef class detect_spikes:
+ * cdef class detector:
  */
   __pyx_t_2 = ((__pyx_v_x > 0.0) != 0);
   if (!__pyx_t_2) {
@@ -1352,7 +1352,7 @@ static CYTHON_INLINE int __pyx_f_11quickspikes_6spikez_compare_sign(double __pyx
   __pyx_r = __pyx_t_1;
   goto __pyx_L0;
 
-  /* "quickspikes/spikez.pyx":13
+  /* "quickspikes/spikes.pyx":13
  *     AFTER_PEAK = 3
  * 
  * cdef inline bint compare_sign(double x, double y):             # <<<<<<<<<<<<<<
@@ -1366,7 +1366,7 @@ static CYTHON_INLINE int __pyx_f_11quickspikes_6spikez_compare_sign(double __pyx
   return __pyx_r;
 }
 
-/* "quickspikes/spikez.pyx":32
+/* "quickspikes/spikes.pyx":32
  *         DetectorState state
  * 
  *     def __init__(self, double thresh, int n_after):             # <<<<<<<<<<<<<<
@@ -1375,12 +1375,12 @@ static CYTHON_INLINE int __pyx_f_11quickspikes_6spikez_compare_sign(double __pyx
  */
 
 /* Python wrapper */
-static int __pyx_pw_11quickspikes_6spikez_13detect_spikes_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_11quickspikes_6spikez_13detect_spikes___init__[] = "Construct spike detector.\n\n        thresh -- the crossing threshold that triggers the detector. Positive\n                  values imply positive-going crossings, and negative values\n                  imply negative-going crossings\n\n        n_after -- the maximum number of samples after threshold crossing to\n                   look for the peak. If a peak has not been located within this\n                   window, the crossing is considered an artifact and is not counted.\n\n        ";
+static int __pyx_pw_11quickspikes_6spikes_8detector_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_11quickspikes_6spikes_8detector___init__[] = "Construct spike detector.\n\n        thresh -- the crossing threshold that triggers the detector. Positive\n                  values imply positive-going crossings, and negative values\n                  imply negative-going crossings\n\n        n_after -- the maximum number of samples after threshold crossing to\n                   look for the peak. If a peak has not been located within this\n                   window, the crossing is considered an artifact and is not counted.\n\n        ";
 #if CYTHON_COMPILING_IN_CPYTHON
-struct wrapperbase __pyx_wrapperbase_11quickspikes_6spikez_13detect_spikes___init__;
+struct wrapperbase __pyx_wrapperbase_11quickspikes_6spikes_8detector___init__;
 #endif
-static int __pyx_pw_11quickspikes_6spikez_13detect_spikes_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static int __pyx_pw_11quickspikes_6spikes_8detector_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   double __pyx_v_thresh;
   int __pyx_v_n_after;
   int __pyx_lineno = 0;
@@ -1428,18 +1428,18 @@ static int __pyx_pw_11quickspikes_6spikez_13detect_spikes_1__init__(PyObject *__
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("__init__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 32; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
-  __Pyx_AddTraceback("quickspikes.spikez.detect_spikes.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("quickspikes.spikes.detector.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_11quickspikes_6spikez_13detect_spikes___init__(((struct __pyx_obj_11quickspikes_6spikez_detect_spikes *)__pyx_v_self), __pyx_v_thresh, __pyx_v_n_after);
+  __pyx_r = __pyx_pf_11quickspikes_6spikes_8detector___init__(((struct __pyx_obj_11quickspikes_6spikes_detector *)__pyx_v_self), __pyx_v_thresh, __pyx_v_n_after);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_11quickspikes_6spikez_13detect_spikes___init__(struct __pyx_obj_11quickspikes_6spikez_detect_spikes *__pyx_v_self, double __pyx_v_thresh, int __pyx_v_n_after) {
+static int __pyx_pf_11quickspikes_6spikes_8detector___init__(struct __pyx_obj_11quickspikes_6spikes_detector *__pyx_v_self, double __pyx_v_thresh, int __pyx_v_n_after) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
@@ -1447,7 +1447,7 @@ static int __pyx_pf_11quickspikes_6spikez_13detect_spikes___init__(struct __pyx_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "quickspikes/spikez.pyx":44
+  /* "quickspikes/spikes.pyx":44
  * 
  *         """
  *         assert thresh != 0             # <<<<<<<<<<<<<<
@@ -1463,7 +1463,7 @@ static int __pyx_pf_11quickspikes_6spikez_13detect_spikes___init__(struct __pyx_
   }
   #endif
 
-  /* "quickspikes/spikez.pyx":45
+  /* "quickspikes/spikes.pyx":45
  *         """
  *         assert thresh != 0
  *         self.thresh = self.scaled_thresh = thresh             # <<<<<<<<<<<<<<
@@ -1473,7 +1473,7 @@ static int __pyx_pf_11quickspikes_6spikez_13detect_spikes___init__(struct __pyx_
   __pyx_v_self->thresh = __pyx_v_thresh;
   __pyx_v_self->scaled_thresh = __pyx_v_thresh;
 
-  /* "quickspikes/spikez.pyx":46
+  /* "quickspikes/spikes.pyx":46
  *         assert thresh != 0
  *         self.thresh = self.scaled_thresh = thresh
  *         self.n_after = n_after             # <<<<<<<<<<<<<<
@@ -1482,16 +1482,16 @@ static int __pyx_pf_11quickspikes_6spikez_13detect_spikes___init__(struct __pyx_
  */
   __pyx_v_self->n_after = __pyx_v_n_after;
 
-  /* "quickspikes/spikez.pyx":47
+  /* "quickspikes/spikes.pyx":47
  *         self.thresh = self.scaled_thresh = thresh
  *         self.n_after = n_after
  *         self.state = BELOW_THRESHOLD             # <<<<<<<<<<<<<<
  * 
  *     def scale_thresh(self, double mean, double sd):
  */
-  __pyx_v_self->state = __pyx_e_11quickspikes_6spikez_BELOW_THRESHOLD;
+  __pyx_v_self->state = __pyx_e_11quickspikes_6spikes_BELOW_THRESHOLD;
 
-  /* "quickspikes/spikez.pyx":32
+  /* "quickspikes/spikes.pyx":32
  *         DetectorState state
  * 
  *     def __init__(self, double thresh, int n_after):             # <<<<<<<<<<<<<<
@@ -1503,14 +1503,14 @@ static int __pyx_pf_11quickspikes_6spikez_13detect_spikes___init__(struct __pyx_
   __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_AddTraceback("quickspikes.spikez.detect_spikes.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("quickspikes.spikes.detector.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "quickspikes/spikez.pyx":49
+/* "quickspikes/spikes.pyx":49
  *         self.state = BELOW_THRESHOLD
  * 
  *     def scale_thresh(self, double mean, double sd):             # <<<<<<<<<<<<<<
@@ -1519,9 +1519,9 @@ static int __pyx_pf_11quickspikes_6spikez_13detect_spikes___init__(struct __pyx_
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11quickspikes_6spikez_13detect_spikes_3scale_thresh(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_11quickspikes_6spikez_13detect_spikes_2scale_thresh[] = "Adjust threshold for the mean and standard deviation of the signal.\n\n        For positive-going thresholds, the effective threshold will be (thresh *\n        sd + mean); for negative-going thresholds the effective threshold will\n        be (thresh * sd - mean)\n\n        ";
-static PyObject *__pyx_pw_11quickspikes_6spikez_13detect_spikes_3scale_thresh(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_11quickspikes_6spikes_8detector_3scale_thresh(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_11quickspikes_6spikes_8detector_2scale_thresh[] = "Adjust threshold for the mean and standard deviation of the signal.\n\n        For positive-going thresholds, the effective threshold will be (thresh *\n        sd + mean); for negative-going thresholds the effective threshold will\n        be (thresh * sd - mean)\n\n        ";
+static PyObject *__pyx_pw_11quickspikes_6spikes_8detector_3scale_thresh(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   double __pyx_v_mean;
   double __pyx_v_sd;
   int __pyx_lineno = 0;
@@ -1569,24 +1569,24 @@ static PyObject *__pyx_pw_11quickspikes_6spikez_13detect_spikes_3scale_thresh(Py
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("scale_thresh", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
-  __Pyx_AddTraceback("quickspikes.spikez.detect_spikes.scale_thresh", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("quickspikes.spikes.detector.scale_thresh", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_11quickspikes_6spikez_13detect_spikes_2scale_thresh(((struct __pyx_obj_11quickspikes_6spikez_detect_spikes *)__pyx_v_self), __pyx_v_mean, __pyx_v_sd);
+  __pyx_r = __pyx_pf_11quickspikes_6spikes_8detector_2scale_thresh(((struct __pyx_obj_11quickspikes_6spikes_detector *)__pyx_v_self), __pyx_v_mean, __pyx_v_sd);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_2scale_thresh(struct __pyx_obj_11quickspikes_6spikez_detect_spikes *__pyx_v_self, double __pyx_v_mean, double __pyx_v_sd) {
+static PyObject *__pyx_pf_11quickspikes_6spikes_8detector_2scale_thresh(struct __pyx_obj_11quickspikes_6spikes_detector *__pyx_v_self, double __pyx_v_mean, double __pyx_v_sd) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("scale_thresh", 0);
 
-  /* "quickspikes/spikez.pyx":57
+  /* "quickspikes/spikes.pyx":57
  * 
  *         """
  *         self.scaled_thresh = self.thresh * sd             # <<<<<<<<<<<<<<
@@ -1595,7 +1595,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_2scale_thresh(st
  */
   __pyx_v_self->scaled_thresh = (__pyx_v_self->thresh * __pyx_v_sd);
 
-  /* "quickspikes/spikez.pyx":58
+  /* "quickspikes/spikes.pyx":58
  *         """
  *         self.scaled_thresh = self.thresh * sd
  *         if self.thresh > 0:             # <<<<<<<<<<<<<<
@@ -1605,7 +1605,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_2scale_thresh(st
   __pyx_t_1 = ((__pyx_v_self->thresh > 0.0) != 0);
   if (__pyx_t_1) {
 
-    /* "quickspikes/spikez.pyx":59
+    /* "quickspikes/spikes.pyx":59
  *         self.scaled_thresh = self.thresh * sd
  *         if self.thresh > 0:
  *             self.scaled_thresh += mean             # <<<<<<<<<<<<<<
@@ -1617,7 +1617,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_2scale_thresh(st
   }
   /*else*/ {
 
-    /* "quickspikes/spikez.pyx":61
+    /* "quickspikes/spikes.pyx":61
  *             self.scaled_thresh += mean
  *         else:
  *             self.scaled_thresh -= mean             # <<<<<<<<<<<<<<
@@ -1628,7 +1628,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_2scale_thresh(st
   }
   __pyx_L3:;
 
-  /* "quickspikes/spikez.pyx":49
+  /* "quickspikes/spikes.pyx":49
  *         self.state = BELOW_THRESHOLD
  * 
  *     def scale_thresh(self, double mean, double sd):             # <<<<<<<<<<<<<<
@@ -1643,7 +1643,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_2scale_thresh(st
   return __pyx_r;
 }
 
-/* "quickspikes/spikez.pyx":63
+/* "quickspikes/spikes.pyx":63
  *             self.scaled_thresh -= mean
  * 
  *     def send(self, double[:] samples):             # <<<<<<<<<<<<<<
@@ -1652,9 +1652,9 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_2scale_thresh(st
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_11quickspikes_6spikez_13detect_spikes_5send(PyObject *__pyx_v_self, PyObject *__pyx_arg_samples); /*proto*/
-static char __pyx_doc_11quickspikes_6spikez_13detect_spikes_4send[] = "Detect spikes in a time series.\n\n        Returns a list of indices corresponding to the peaks (or troughs) in the\n        data. Retains state between calls. The detector should be reset if there\n        is a gap in the signal.\n\n        ";
-static PyObject *__pyx_pw_11quickspikes_6spikez_13detect_spikes_5send(PyObject *__pyx_v_self, PyObject *__pyx_arg_samples) {
+static PyObject *__pyx_pw_11quickspikes_6spikes_8detector_5send(PyObject *__pyx_v_self, PyObject *__pyx_arg_samples); /*proto*/
+static char __pyx_doc_11quickspikes_6spikes_8detector_4send[] = "Detect spikes in a time series.\n\n        Returns a list of indices corresponding to the peaks (or troughs) in the\n        data. Retains state between calls. The detector should be reset if there\n        is a gap in the signal.\n\n        ";
+static PyObject *__pyx_pw_11quickspikes_6spikes_8detector_5send(PyObject *__pyx_v_self, PyObject *__pyx_arg_samples) {
   __Pyx_memviewslice __pyx_v_samples = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
@@ -1667,18 +1667,18 @@ static PyObject *__pyx_pw_11quickspikes_6spikez_13detect_spikes_5send(PyObject *
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
-  __Pyx_AddTraceback("quickspikes.spikez.detect_spikes.send", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("quickspikes.spikes.detector.send", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(((struct __pyx_obj_11quickspikes_6spikez_detect_spikes *)__pyx_v_self), __pyx_v_samples);
+  __pyx_r = __pyx_pf_11quickspikes_6spikes_8detector_4send(((struct __pyx_obj_11quickspikes_6spikes_detector *)__pyx_v_self), __pyx_v_samples);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __pyx_obj_11quickspikes_6spikez_detect_spikes *__pyx_v_self, __Pyx_memviewslice __pyx_v_samples) {
+static PyObject *__pyx_pf_11quickspikes_6spikes_8detector_4send(struct __pyx_obj_11quickspikes_6spikes_detector *__pyx_v_self, __Pyx_memviewslice __pyx_v_samples) {
   double __pyx_v_x;
   int __pyx_v_i;
   PyObject *__pyx_v_out = NULL;
@@ -1696,7 +1696,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("send", 0);
 
-  /* "quickspikes/spikez.pyx":73
+  /* "quickspikes/spikes.pyx":73
  *         """
  *         cdef double x
  *         cdef int i = 0             # <<<<<<<<<<<<<<
@@ -1705,7 +1705,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
  */
   __pyx_v_i = 0;
 
-  /* "quickspikes/spikez.pyx":74
+  /* "quickspikes/spikes.pyx":74
  *         cdef double x
  *         cdef int i = 0
  *         out = []             # <<<<<<<<<<<<<<
@@ -1717,7 +1717,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
   __pyx_v_out = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "quickspikes/spikez.pyx":76
+  /* "quickspikes/spikes.pyx":76
  *         out = []
  * 
  *         for i in range(samples.shape[0]):             # <<<<<<<<<<<<<<
@@ -1728,7 +1728,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "quickspikes/spikez.pyx":77
+    /* "quickspikes/spikes.pyx":77
  * 
  *         for i in range(samples.shape[0]):
  *             x = samples[i]             # <<<<<<<<<<<<<<
@@ -1747,27 +1747,27 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
     }
     __pyx_v_x = (*((double *) ( /* dim=0 */ (__pyx_v_samples.data + __pyx_t_4 * __pyx_v_samples.strides[0]) )));
 
-    /* "quickspikes/spikez.pyx":78
+    /* "quickspikes/spikes.pyx":78
  *         for i in range(samples.shape[0]):
  *             x = samples[i]
  *             if self.state is BELOW_THRESHOLD:             # <<<<<<<<<<<<<<
  *                 if compare_sign(x - self.scaled_thresh, self.scaled_thresh):
  *                     self.prev_val = x
  */
-    __pyx_t_6 = ((__pyx_v_self->state == __pyx_e_11quickspikes_6spikez_BELOW_THRESHOLD) != 0);
+    __pyx_t_6 = ((__pyx_v_self->state == __pyx_e_11quickspikes_6spikes_BELOW_THRESHOLD) != 0);
     if (__pyx_t_6) {
 
-      /* "quickspikes/spikez.pyx":79
+      /* "quickspikes/spikes.pyx":79
  *             x = samples[i]
  *             if self.state is BELOW_THRESHOLD:
  *                 if compare_sign(x - self.scaled_thresh, self.scaled_thresh):             # <<<<<<<<<<<<<<
  *                     self.prev_val = x
  *                     self.n_after_crossing = 0
  */
-      __pyx_t_6 = (__pyx_f_11quickspikes_6spikez_compare_sign((__pyx_v_x - __pyx_v_self->scaled_thresh), __pyx_v_self->scaled_thresh) != 0);
+      __pyx_t_6 = (__pyx_f_11quickspikes_6spikes_compare_sign((__pyx_v_x - __pyx_v_self->scaled_thresh), __pyx_v_self->scaled_thresh) != 0);
       if (__pyx_t_6) {
 
-        /* "quickspikes/spikez.pyx":80
+        /* "quickspikes/spikes.pyx":80
  *             if self.state is BELOW_THRESHOLD:
  *                 if compare_sign(x - self.scaled_thresh, self.scaled_thresh):
  *                     self.prev_val = x             # <<<<<<<<<<<<<<
@@ -1776,7 +1776,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
  */
         __pyx_v_self->prev_val = __pyx_v_x;
 
-        /* "quickspikes/spikez.pyx":81
+        /* "quickspikes/spikes.pyx":81
  *                 if compare_sign(x - self.scaled_thresh, self.scaled_thresh):
  *                     self.prev_val = x
  *                     self.n_after_crossing = 0             # <<<<<<<<<<<<<<
@@ -1785,41 +1785,41 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
  */
         __pyx_v_self->n_after_crossing = 0;
 
-        /* "quickspikes/spikez.pyx":82
+        /* "quickspikes/spikes.pyx":82
  *                     self.prev_val = x
  *                     self.n_after_crossing = 0
  *                     self.state = BEFORE_PEAK             # <<<<<<<<<<<<<<
  *             elif self.state is BEFORE_PEAK:
  *                 if compare_sign(self.prev_val - x, self.scaled_thresh):
  */
-        __pyx_v_self->state = __pyx_e_11quickspikes_6spikez_BEFORE_PEAK;
+        __pyx_v_self->state = __pyx_e_11quickspikes_6spikes_BEFORE_PEAK;
         goto __pyx_L6;
       }
       __pyx_L6:;
       goto __pyx_L5;
     }
 
-    /* "quickspikes/spikez.pyx":83
+    /* "quickspikes/spikes.pyx":83
  *                     self.n_after_crossing = 0
  *                     self.state = BEFORE_PEAK
  *             elif self.state is BEFORE_PEAK:             # <<<<<<<<<<<<<<
  *                 if compare_sign(self.prev_val - x, self.scaled_thresh):
  *                     out.append(i - 1)
  */
-    __pyx_t_6 = ((__pyx_v_self->state == __pyx_e_11quickspikes_6spikez_BEFORE_PEAK) != 0);
+    __pyx_t_6 = ((__pyx_v_self->state == __pyx_e_11quickspikes_6spikes_BEFORE_PEAK) != 0);
     if (__pyx_t_6) {
 
-      /* "quickspikes/spikez.pyx":84
+      /* "quickspikes/spikes.pyx":84
  *                     self.state = BEFORE_PEAK
  *             elif self.state is BEFORE_PEAK:
  *                 if compare_sign(self.prev_val - x, self.scaled_thresh):             # <<<<<<<<<<<<<<
  *                     out.append(i - 1)
  *                     self.state = AFTER_PEAK
  */
-      __pyx_t_6 = (__pyx_f_11quickspikes_6spikez_compare_sign((__pyx_v_self->prev_val - __pyx_v_x), __pyx_v_self->scaled_thresh) != 0);
+      __pyx_t_6 = (__pyx_f_11quickspikes_6spikes_compare_sign((__pyx_v_self->prev_val - __pyx_v_x), __pyx_v_self->scaled_thresh) != 0);
       if (__pyx_t_6) {
 
-        /* "quickspikes/spikez.pyx":85
+        /* "quickspikes/spikes.pyx":85
  *             elif self.state is BEFORE_PEAK:
  *                 if compare_sign(self.prev_val - x, self.scaled_thresh):
  *                     out.append(i - 1)             # <<<<<<<<<<<<<<
@@ -1831,18 +1831,18 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
         __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_out, __pyx_t_1); if (unlikely(__pyx_t_7 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 85; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "quickspikes/spikez.pyx":86
+        /* "quickspikes/spikes.pyx":86
  *                 if compare_sign(self.prev_val - x, self.scaled_thresh):
  *                     out.append(i - 1)
  *                     self.state = AFTER_PEAK             # <<<<<<<<<<<<<<
  *                 elif self.n_after_crossing > self.n_after:
  *                     self.state = BELOW_THRESHOLD
  */
-        __pyx_v_self->state = __pyx_e_11quickspikes_6spikez_AFTER_PEAK;
+        __pyx_v_self->state = __pyx_e_11quickspikes_6spikes_AFTER_PEAK;
         goto __pyx_L7;
       }
 
-      /* "quickspikes/spikez.pyx":87
+      /* "quickspikes/spikes.pyx":87
  *                     out.append(i - 1)
  *                     self.state = AFTER_PEAK
  *                 elif self.n_after_crossing > self.n_after:             # <<<<<<<<<<<<<<
@@ -1852,19 +1852,19 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
       __pyx_t_6 = ((__pyx_v_self->n_after_crossing > __pyx_v_self->n_after) != 0);
       if (__pyx_t_6) {
 
-        /* "quickspikes/spikez.pyx":88
+        /* "quickspikes/spikes.pyx":88
  *                     self.state = AFTER_PEAK
  *                 elif self.n_after_crossing > self.n_after:
  *                     self.state = BELOW_THRESHOLD             # <<<<<<<<<<<<<<
  *                 else:
  *                     self.prev_val = x
  */
-        __pyx_v_self->state = __pyx_e_11quickspikes_6spikez_BELOW_THRESHOLD;
+        __pyx_v_self->state = __pyx_e_11quickspikes_6spikes_BELOW_THRESHOLD;
         goto __pyx_L7;
       }
       /*else*/ {
 
-        /* "quickspikes/spikez.pyx":90
+        /* "quickspikes/spikes.pyx":90
  *                     self.state = BELOW_THRESHOLD
  *                 else:
  *                     self.prev_val = x             # <<<<<<<<<<<<<<
@@ -1873,7 +1873,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
  */
         __pyx_v_self->prev_val = __pyx_v_x;
 
-        /* "quickspikes/spikez.pyx":91
+        /* "quickspikes/spikes.pyx":91
  *                 else:
  *                     self.prev_val = x
  *                     self.n_after_crossing += 1             # <<<<<<<<<<<<<<
@@ -1886,34 +1886,34 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
       goto __pyx_L5;
     }
 
-    /* "quickspikes/spikez.pyx":92
+    /* "quickspikes/spikes.pyx":92
  *                     self.prev_val = x
  *                     self.n_after_crossing += 1
  *             elif self.state is AFTER_PEAK:             # <<<<<<<<<<<<<<
  *                 if compare_sign(self.scaled_thresh - x, self.scaled_thresh):
  *                     self.state = BELOW_THRESHOLD
  */
-    __pyx_t_6 = ((__pyx_v_self->state == __pyx_e_11quickspikes_6spikez_AFTER_PEAK) != 0);
+    __pyx_t_6 = ((__pyx_v_self->state == __pyx_e_11quickspikes_6spikes_AFTER_PEAK) != 0);
     if (__pyx_t_6) {
 
-      /* "quickspikes/spikez.pyx":93
+      /* "quickspikes/spikes.pyx":93
  *                     self.n_after_crossing += 1
  *             elif self.state is AFTER_PEAK:
  *                 if compare_sign(self.scaled_thresh - x, self.scaled_thresh):             # <<<<<<<<<<<<<<
  *                     self.state = BELOW_THRESHOLD
  *         return out
  */
-      __pyx_t_6 = (__pyx_f_11quickspikes_6spikez_compare_sign((__pyx_v_self->scaled_thresh - __pyx_v_x), __pyx_v_self->scaled_thresh) != 0);
+      __pyx_t_6 = (__pyx_f_11quickspikes_6spikes_compare_sign((__pyx_v_self->scaled_thresh - __pyx_v_x), __pyx_v_self->scaled_thresh) != 0);
       if (__pyx_t_6) {
 
-        /* "quickspikes/spikez.pyx":94
+        /* "quickspikes/spikes.pyx":94
  *             elif self.state is AFTER_PEAK:
  *                 if compare_sign(self.scaled_thresh - x, self.scaled_thresh):
  *                     self.state = BELOW_THRESHOLD             # <<<<<<<<<<<<<<
  *         return out
  * 
  */
-        __pyx_v_self->state = __pyx_e_11quickspikes_6spikez_BELOW_THRESHOLD;
+        __pyx_v_self->state = __pyx_e_11quickspikes_6spikes_BELOW_THRESHOLD;
         goto __pyx_L8;
       }
       __pyx_L8:;
@@ -1922,7 +1922,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
     __pyx_L5:;
   }
 
-  /* "quickspikes/spikez.pyx":95
+  /* "quickspikes/spikes.pyx":95
  *                 if compare_sign(self.scaled_thresh - x, self.scaled_thresh):
  *                     self.state = BELOW_THRESHOLD
  *         return out             # <<<<<<<<<<<<<<
@@ -1934,7 +1934,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
   __pyx_r = __pyx_v_out;
   goto __pyx_L0;
 
-  /* "quickspikes/spikez.pyx":63
+  /* "quickspikes/spikes.pyx":63
  *             self.scaled_thresh -= mean
  * 
  *     def send(self, double[:] samples):             # <<<<<<<<<<<<<<
@@ -1945,7 +1945,7 @@ static PyObject *__pyx_pf_11quickspikes_6spikez_13detect_spikes_4send(struct __p
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("quickspikes.spikez.detect_spikes.send", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("quickspikes.spikes.detector.send", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_samples, 1);
@@ -12593,7 +12593,7 @@ static void __pyx_memoryview__slice_assign_scalar(char *__pyx_v_data, Py_ssize_t
   /* function exit code */
 }
 
-static PyObject *__pyx_tp_new_11quickspikes_6spikez_detect_spikes(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_11quickspikes_6spikes_detector(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   if (likely((t->tp_flags & Py_TPFLAGS_IS_ABSTRACT) == 0)) {
     o = (*t->tp_alloc)(t, 0);
@@ -12604,7 +12604,7 @@ static PyObject *__pyx_tp_new_11quickspikes_6spikez_detect_spikes(PyTypeObject *
   return o;
 }
 
-static void __pyx_tp_dealloc_11quickspikes_6spikez_detect_spikes(PyObject *o) {
+static void __pyx_tp_dealloc_11quickspikes_6spikes_detector(PyObject *o) {
   #if PY_VERSION_HEX >= 0x030400a1
   if (unlikely(Py_TYPE(o)->tp_finalize) && (!PyType_IS_GC(Py_TYPE(o)) || !_PyGC_FINALIZED(o))) {
     if (PyObject_CallFinalizerFromDealloc(o)) return;
@@ -12613,18 +12613,18 @@ static void __pyx_tp_dealloc_11quickspikes_6spikez_detect_spikes(PyObject *o) {
   (*Py_TYPE(o)->tp_free)(o);
 }
 
-static PyMethodDef __pyx_methods_11quickspikes_6spikez_detect_spikes[] = {
-  {"scale_thresh", (PyCFunction)__pyx_pw_11quickspikes_6spikez_13detect_spikes_3scale_thresh, METH_VARARGS|METH_KEYWORDS, __pyx_doc_11quickspikes_6spikez_13detect_spikes_2scale_thresh},
-  {"send", (PyCFunction)__pyx_pw_11quickspikes_6spikez_13detect_spikes_5send, METH_O, __pyx_doc_11quickspikes_6spikez_13detect_spikes_4send},
+static PyMethodDef __pyx_methods_11quickspikes_6spikes_detector[] = {
+  {"scale_thresh", (PyCFunction)__pyx_pw_11quickspikes_6spikes_8detector_3scale_thresh, METH_VARARGS|METH_KEYWORDS, __pyx_doc_11quickspikes_6spikes_8detector_2scale_thresh},
+  {"send", (PyCFunction)__pyx_pw_11quickspikes_6spikes_8detector_5send, METH_O, __pyx_doc_11quickspikes_6spikes_8detector_4send},
   {0, 0, 0, 0}
 };
 
-static PyTypeObject __pyx_type_11quickspikes_6spikez_detect_spikes = {
+static PyTypeObject __pyx_type_11quickspikes_6spikes_detector = {
   PyVarObject_HEAD_INIT(0, 0)
-  "quickspikes.spikez.detect_spikes", /*tp_name*/
-  sizeof(struct __pyx_obj_11quickspikes_6spikez_detect_spikes), /*tp_basicsize*/
+  "quickspikes.spikes.detector", /*tp_name*/
+  sizeof(struct __pyx_obj_11quickspikes_6spikes_detector), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_11quickspikes_6spikez_detect_spikes, /*tp_dealloc*/
+  __pyx_tp_dealloc_11quickspikes_6spikes_detector, /*tp_dealloc*/
   0, /*tp_print*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -12651,7 +12651,7 @@ static PyTypeObject __pyx_type_11quickspikes_6spikez_detect_spikes = {
   0, /*tp_weaklistoffset*/
   0, /*tp_iter*/
   0, /*tp_iternext*/
-  __pyx_methods_11quickspikes_6spikez_detect_spikes, /*tp_methods*/
+  __pyx_methods_11quickspikes_6spikes_detector, /*tp_methods*/
   0, /*tp_members*/
   0, /*tp_getset*/
   0, /*tp_base*/
@@ -12659,9 +12659,9 @@ static PyTypeObject __pyx_type_11quickspikes_6spikez_detect_spikes = {
   0, /*tp_descr_get*/
   0, /*tp_descr_set*/
   0, /*tp_dictoffset*/
-  __pyx_pw_11quickspikes_6spikez_13detect_spikes_1__init__, /*tp_init*/
+  __pyx_pw_11quickspikes_6spikes_8detector_1__init__, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_11quickspikes_6spikez_detect_spikes, /*tp_new*/
+  __pyx_tp_new_11quickspikes_6spikes_detector, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -12793,7 +12793,7 @@ static PyBufferProcs __pyx_tp_as_buffer_array = {
 
 static PyTypeObject __pyx_type___pyx_array = {
   PyVarObject_HEAD_INIT(0, 0)
-  "quickspikes.spikez.array", /*tp_name*/
+  "quickspikes.spikes.array", /*tp_name*/
   sizeof(struct __pyx_array_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_array, /*tp_dealloc*/
@@ -12898,7 +12898,7 @@ static PyMethodDef __pyx_methods_Enum[] = {
 
 static PyTypeObject __pyx_type___pyx_MemviewEnum = {
   PyVarObject_HEAD_INIT(0, 0)
-  "quickspikes.spikez.Enum", /*tp_name*/
+  "quickspikes.spikes.Enum", /*tp_name*/
   sizeof(struct __pyx_MemviewEnum_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_Enum, /*tp_dealloc*/
@@ -13144,7 +13144,7 @@ static PyBufferProcs __pyx_tp_as_buffer_memoryview = {
 
 static PyTypeObject __pyx_type___pyx_memoryview = {
   PyVarObject_HEAD_INIT(0, 0)
-  "quickspikes.spikez.memoryview", /*tp_name*/
+  "quickspikes.spikes.memoryview", /*tp_name*/
   sizeof(struct __pyx_memoryview_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_memoryview, /*tp_dealloc*/
@@ -13268,7 +13268,7 @@ static struct PyGetSetDef __pyx_getsets__memoryviewslice[] = {
 
 static PyTypeObject __pyx_type___pyx_memoryviewslice = {
   PyVarObject_HEAD_INIT(0, 0)
-  "quickspikes.spikez._memoryviewslice", /*tp_name*/
+  "quickspikes.spikes._memoryviewslice", /*tp_name*/
   sizeof(struct __pyx_memoryviewslice_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc__memoryviewslice, /*tp_dealloc*/
@@ -13342,7 +13342,7 @@ static struct PyModuleDef __pyx_moduledef = {
   #else
     PyModuleDef_HEAD_INIT,
   #endif
-    "spikez",
+    "spikes",
     __pyx_k_spike_detection_routines_Copyrig, /* m_doc */
     -1, /* m_size */
     __pyx_methods /* m_methods */,
@@ -13645,11 +13645,11 @@ static int __Pyx_InitGlobals(void) {
 }
 
 #if PY_MAJOR_VERSION < 3
-PyMODINIT_FUNC initspikez(void); /*proto*/
-PyMODINIT_FUNC initspikez(void)
+PyMODINIT_FUNC initspikes(void); /*proto*/
+PyMODINIT_FUNC initspikes(void)
 #else
-PyMODINIT_FUNC PyInit_spikez(void); /*proto*/
-PyMODINIT_FUNC PyInit_spikez(void)
+PyMODINIT_FUNC PyInit_spikes(void); /*proto*/
+PyMODINIT_FUNC PyInit_spikes(void)
 #endif
 {
   PyObject *__pyx_t_1 = NULL;
@@ -13666,7 +13666,7 @@ PyMODINIT_FUNC PyInit_spikez(void)
           Py_FatalError("failed to import 'refnanny' module");
   }
   #endif
-  __Pyx_RefNannySetupContext("PyMODINIT_FUNC PyInit_spikez(void)", 0);
+  __Pyx_RefNannySetupContext("PyMODINIT_FUNC PyInit_spikes(void)", 0);
   if ( __Pyx_check_binary_version() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_empty_tuple = PyTuple_New(0); if (unlikely(!__pyx_empty_tuple)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_empty_bytes = PyBytes_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_bytes)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -13688,7 +13688,7 @@ PyMODINIT_FUNC PyInit_spikez(void)
   #endif
   /*--- Module creation code ---*/
   #if PY_MAJOR_VERSION < 3
-  __pyx_m = Py_InitModule4("spikez", __pyx_methods, __pyx_k_spike_detection_routines_Copyrig, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
+  __pyx_m = Py_InitModule4("spikes", __pyx_methods, __pyx_k_spike_detection_routines_Copyrig, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
   #else
   __pyx_m = PyModule_Create(&__pyx_moduledef);
   #endif
@@ -13705,14 +13705,14 @@ PyMODINIT_FUNC PyInit_spikez(void)
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
-  if (__pyx_module_is_main_quickspikes__spikez) {
+  if (__pyx_module_is_main_quickspikes__spikes) {
     if (PyObject_SetAttrString(__pyx_m, "__name__", __pyx_n_s_main) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    if (!PyDict_GetItemString(modules, "quickspikes.spikez")) {
-      if (unlikely(PyDict_SetItemString(modules, "quickspikes.spikez", __pyx_m) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!PyDict_GetItemString(modules, "quickspikes.spikes")) {
+      if (unlikely(PyDict_SetItemString(modules, "quickspikes.spikes", __pyx_m) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
   }
   #endif
@@ -13729,20 +13729,20 @@ PyMODINIT_FUNC PyInit_spikez(void)
   /*--- Variable export code ---*/
   /*--- Function export code ---*/
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_11quickspikes_6spikez_detect_spikes) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 17; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_type_11quickspikes_6spikez_detect_spikes.tp_print = 0;
+  if (PyType_Ready(&__pyx_type_11quickspikes_6spikes_detector) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 17; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_type_11quickspikes_6spikes_detector.tp_print = 0;
   #if CYTHON_COMPILING_IN_CPYTHON
   {
-    PyObject *wrapper = PyObject_GetAttrString((PyObject *)&__pyx_type_11quickspikes_6spikez_detect_spikes, "__init__"); if (unlikely(!wrapper)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 17; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    PyObject *wrapper = PyObject_GetAttrString((PyObject *)&__pyx_type_11quickspikes_6spikes_detector, "__init__"); if (unlikely(!wrapper)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 17; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     if (Py_TYPE(wrapper) == &PyWrapperDescr_Type) {
-      __pyx_wrapperbase_11quickspikes_6spikez_13detect_spikes___init__ = *((PyWrapperDescrObject *)wrapper)->d_base;
-      __pyx_wrapperbase_11quickspikes_6spikez_13detect_spikes___init__.doc = __pyx_doc_11quickspikes_6spikez_13detect_spikes___init__;
-      ((PyWrapperDescrObject *)wrapper)->d_base = &__pyx_wrapperbase_11quickspikes_6spikez_13detect_spikes___init__;
+      __pyx_wrapperbase_11quickspikes_6spikes_8detector___init__ = *((PyWrapperDescrObject *)wrapper)->d_base;
+      __pyx_wrapperbase_11quickspikes_6spikes_8detector___init__.doc = __pyx_doc_11quickspikes_6spikes_8detector___init__;
+      ((PyWrapperDescrObject *)wrapper)->d_base = &__pyx_wrapperbase_11quickspikes_6spikes_8detector___init__;
     }
   }
   #endif
-  if (PyObject_SetAttrString(__pyx_m, "detect_spikes", (PyObject *)&__pyx_type_11quickspikes_6spikez_detect_spikes) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 17; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_ptype_11quickspikes_6spikez_detect_spikes = &__pyx_type_11quickspikes_6spikez_detect_spikes;
+  if (PyObject_SetAttrString(__pyx_m, "detector", (PyObject *)&__pyx_type_11quickspikes_6spikes_detector) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 17; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_11quickspikes_6spikes_detector = &__pyx_type_11quickspikes_6spikes_detector;
   if (PyType_Ready(&__pyx_type___pyx_array) < 0) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type___pyx_array.tp_print = 0;
   __pyx_array_type = &__pyx_type___pyx_array;
@@ -13775,7 +13775,7 @@ PyMODINIT_FUNC PyInit_spikez(void)
   /*--- Function import code ---*/
   /*--- Execution code ---*/
 
-  /* "quickspikes/spikez.pyx":1
+  /* "quickspikes/spikes.pyx":1
  * # -*- coding: utf-8 -*-             # <<<<<<<<<<<<<<
  * # -*- mode: cython -*-
  * """spike detection routines
@@ -13909,11 +13909,11 @@ PyMODINIT_FUNC PyInit_spikez(void)
   __Pyx_XDECREF(__pyx_t_1);
   if (__pyx_m) {
     if (__pyx_d) {
-      __Pyx_AddTraceback("init quickspikes.spikez", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init quickspikes.spikes", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     Py_DECREF(__pyx_m); __pyx_m = 0;
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init quickspikes.spikez");
+    PyErr_SetString(PyExc_ImportError, "init quickspikes.spikes");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();

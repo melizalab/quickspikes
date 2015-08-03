@@ -1,4 +1,7 @@
 .DS_Store
 *.so
+*.pyc
 __pycache__/
 build/
+dist/
+/quickspikes.egg-info/

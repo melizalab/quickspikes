@@ -29,3 +29,13 @@ def test_detect_spikes():
     det = detector(-4000, 40)
     assert_sequence_equal(det.send(a_recording), [])
     assert_sequence_equal(det.send(-a_recording), [t + t_peak for t in times])
+
+def test_extract_spikes():
+    from quickspikes.spikes import peaks
+
+    x = peaks(a_recording, [t + t_peak for t in times], n_before=20, n_after=300)
+    # last peak should get dropped
+    assert_equal(x.shape[0], len(times) - 1)
+    assert_equal(x.shape[1], 320)
+
+    assert_true(nx.all(a_spike == x[0,:a_spike.size]))

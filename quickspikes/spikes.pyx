@@ -5,6 +5,8 @@
 Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Wed Jul 24 09:26:36 2013
 """
+from cython.view cimport array as cvarray
+
 cdef enum DetectorState:
     BELOW_THRESHOLD = 1
     BEFORE_PEAK = 2
@@ -61,7 +63,6 @@ cdef class detector:
             self.scaled_thresh -= mean
 
     def send(self, double[:] samples):
-
         """Detect spikes in a time series.
 
         Returns a list of indices corresponding to the peaks (or troughs) in the
@@ -93,6 +94,52 @@ cdef class detector:
                 if compare_sign(self.scaled_thresh - x, self.scaled_thresh):
                     self.state = BELOW_THRESHOLD
         return out
+
+
+def peaks(double[:] samples, times, int n_before=75, int n_after=400):
+    """Extracts samples around times
+
+    Returns a 2D array with len(times) rows and (n_before + n_after) columns
+    containing the values surrounding the sample indices in times.
+
+    """
+
+    cdef int i = 0
+    cdef int event
+    cdef double [:, :] out = cvarray(shape=(len(times), n_before + n_after),
+                                     itemsize=sizeof(double), format="d")
+    for event in times:
+        print event
+        if (event - n_before < 0) or (event + n_after > samples.size):
+            continue
+        else:
+            out[i,:] = samples[event-n_before:event+n_after]
+            i += 1
+
+    return out[:i,:]
+
+
+def subthreshold(double[:] samples, times,
+                 double v_thresh=-50, double dv_thresh=0, min_size=10):
+    """Removes spikes from time series
+
+    Spikes are removed from the voltage trace by beginning at each peak and
+    moving in either direction until V drops below thresh_v OR dv drops below
+    thresh_dv.
+
+    - samples : signal to analyze
+    - times : times of the peaks (in samples)
+    - thresh_v : do not include points contiguous with the peak with V > thresh_v
+    - thresh_dv : do not include points contiguous with the peak with deltaV > thresh_dv.
+                  negative values correspond to positive-going voltages
+    - min_size : always remove at least this many points on either side of peak
+
+    Returns a copy of samples with the data points around spike times set to NaN
+
+    """
+    pass
+
+
 
 
 # Variables:

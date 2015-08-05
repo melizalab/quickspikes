@@ -6,4 +6,4 @@ Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Wed Jul 24 09:26:36 2013
 """
 
-from spikes import detector
+from spikes import detector, peaks, subthreshold

@@ -24,6 +24,24 @@ Or to build from a copy of the repository:
 
     setup.py install
 
+To detect peaks, you instantiate the detector with parameters that match the events you want to detect, and then send the detector chunks of data. For example, an extracellular recording at 20 kHz stored in 16-bit integers may have a noise floor around 2000, and the spikes will be on the order of 20 samples wide:
+
+```python
+import quickspikes as qs
+det = qs.detector(1000, 30)
+times = det.send(samples)
+```
+
+You can adjust the detector's threshold to compensate for shifts in the mean and standard deviation of the signal:
+
+```python
+reldet = qs.detector(2.5, 30)
+reldet.scale_thresh(samples.mean(), samples.std())
+times = reldet.send(samples)
+```
+
+To detect negative-going events, you'll need to invert the signal.
+
 There is also a reference copy of an ANSI C implementation and an `f2py` wrapper in `f2py/`. This algorithm is slightly less efficient and flexible, but may give better results if included directly in a C codebase.
 
 ### License

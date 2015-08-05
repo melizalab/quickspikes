@@ -14,7 +14,7 @@ cdef enum DetectorState:
 
 cdef inline bint compare_sign(double x, double y):
     """return True iff ((x > 0) && (y > 0)) || ((x < 0) && (y < 0))"""
-    return ((x > 0) and (y > 0)) or ((x < 0) and (y < 0))
+    return ((x >= 0) and (y >= 0)) or ((x < 0) and (y < 0))
 
 cdef class detector:
     """Detect spikes in a continuous stream of samples.
@@ -22,7 +22,6 @@ cdef class detector:
     This implementation allows samples to be sent to the detector in blocks, and
     maintains state across successive calls.
     """
-
     cdef:
         double thresh
         double scaled_thresh
@@ -34,33 +33,28 @@ cdef class detector:
     def __init__(self, double thresh, int n_after):
         """Construct spike detector.
 
-        thresh -- the crossing threshold that triggers the detector. Positive
-                  values imply positive-going crossings, and negative values
-                  imply negative-going crossings
-
-        n_after -- the maximum number of samples after threshold crossing to
-                   look for the peak. If a peak has not been located within this
-                   window, the crossing is considered an artifact and is not counted.
+        Parameters
+        ----------
+        thresh : double
+          The crossing threshold that triggers the detector. NB: to detect
+          negative-going peaks, invert the signal sent to send()
+        n_after : int
+          The maximum number of samples after threshold crossing to look for the
+          peak. If a peak has not been located within this window, the crossing
+          is considered an artifact and is not counted.
 
         """
-        assert thresh != 0
         self.thresh = self.scaled_thresh = thresh
         self.n_after = n_after
-        self.state = BELOW_THRESHOLD
+        self.reset()
 
     def scale_thresh(self, double mean, double sd):
         """Adjust threshold for the mean and standard deviation of the signal.
 
-        For positive-going thresholds, the effective threshold will be (thresh *
-        sd + mean); for negative-going thresholds the effective threshold will
-        be (thresh * sd - mean)
+        The effective threshold will be (thresh * sd + mean)
 
         """
-        self.scaled_thresh = self.thresh * sd
-        if self.thresh > 0:
-            self.scaled_thresh += mean
-        else:
-            self.scaled_thresh -= mean
+        self.scaled_thresh = self.thresh * sd + mean
 
     def send(self, double[:] samples):
         """Detect spikes in a time series.
@@ -77,12 +71,12 @@ cdef class detector:
         for i in range(samples.shape[0]):
             x = samples[i]
             if self.state is BELOW_THRESHOLD:
-                if compare_sign(x - self.scaled_thresh, self.scaled_thresh):
+                if x >= self.scaled_thresh:
                     self.prev_val = x
                     self.n_after_crossing = 0
                     self.state = BEFORE_PEAK
             elif self.state is BEFORE_PEAK:
-                if compare_sign(self.prev_val - x, self.scaled_thresh):
+                if self.prev_val > x:
                     out.append(i - 1)
                     self.state = AFTER_PEAK
                 elif self.n_after_crossing > self.n_after:
@@ -91,9 +85,13 @@ cdef class detector:
                     self.prev_val = x
                     self.n_after_crossing += 1
             elif self.state is AFTER_PEAK:
-                if compare_sign(self.scaled_thresh - x, self.scaled_thresh):
+                if x < self.scaled_thresh:
                     self.state = BELOW_THRESHOLD
         return out
+
+    def reset(self):
+        """Reset the detector's internal state"""
+        self.state = BELOW_THRESHOLD
 
 
 def peaks(double[:] samples, times, int n_before=75, int n_after=400):
@@ -103,13 +101,11 @@ def peaks(double[:] samples, times, int n_before=75, int n_after=400):
     containing the values surrounding the sample indices in times.
 
     """
-
     cdef int i = 0
     cdef int event
     cdef double [:, :] out = cvarray(shape=(len(times), n_before + n_after),
                                      itemsize=sizeof(double), format="d")
     for event in times:
-        print event
         if (event - n_before < 0) or (event + n_after > samples.size):
             continue
         else:
@@ -125,7 +121,8 @@ def subthreshold(double[:] samples, times,
 
     Spikes are removed from the voltage trace by beginning at each peak and
     moving in either direction until V drops below thresh_v OR dv drops below
-    thresh_dv.
+    thresh_dv. This algorithm does not work with negative peaks, so invert your
+    signal if you need to.
 
     - samples : signal to analyze
     - times : times of the peaks (in samples)

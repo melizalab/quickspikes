@@ -19,16 +19,12 @@ times = [100, 400, 1200, 1500, 5000, 5200, 6123, 9730]
 for t in times:
     a_recording[t:t + a_spike.size] += a_spike
 
-def test_detect_spikes():
+def test_detect_extrac_spikes():
     from quickspikes.spikes import detector
 
     det = detector(2000, 40)
     assert_sequence_equal(det.send(a_recording), [t + t_peak for t in times])
     assert_sequence_equal(det.send(-a_recording), [t + t_trough for t in times])
-
-    det = detector(-4000, 40)
-    assert_sequence_equal(det.send(a_recording), [])
-    assert_sequence_equal(det.send(-a_recording), [t + t_peak for t in times])
 
 def test_extract_spikes():
     from quickspikes.spikes import peaks
@@ -39,3 +35,13 @@ def test_extract_spikes():
     assert_equal(x.shape[1], 320)
 
     assert_true(nx.all(a_spike == x[0,:a_spike.size]))
+
+def test_detect_intrac_spikes():
+    from quickspikes.spikes import detector
+    b_spike = nx.load("test/intra_spike.npy")
+
+    det = detector(0, 100)
+    assert_sequence_equal(det.send(b_spike), [3939])
+
+    det = detector(-20, 100)
+    assert_sequence_equal(det.send(b_spike), [3939])

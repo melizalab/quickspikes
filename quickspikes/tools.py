@@ -6,7 +6,7 @@ Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Fri Jul 12 14:05:16 2013
 """
 
-def realign_spikes(times, spikes, upsample, jitter=1):
+def realign_spikes(times, spikes, upsample, jitter=1, reflect_fft=False):
     """Realign spikes to their peaks using bandwidth-limited resampling
 
     times    : one-dimensional array of spike times, in units of samples
@@ -24,7 +24,7 @@ def realign_spikes(times, spikes, upsample, jitter=1):
 
     # first infer the expected peak time
     expected_peak = mean(spikes, 0).argmax() * upsample
-    spikes = fftresample(spikes, nsamples * upsample)
+    spikes = fftresample(spikes, nsamples * upsample, reflect=reflect_fft)
     # find peaks within upsample samples of mean peak
     shift = find_peaks(spikes, expected_peak, upsample * jitter)
     start = shift + upsample * jitter
@@ -48,14 +48,26 @@ def find_peaks(spikes, peak, window):
     r = slice(peak - window, peak + window + 1)
     return spikes[:,r].argmax(1) - window
 
-def fftresample(S, npoints, axis=1):
-    """
-    Resample a signal using discrete fourier transform. The signal
+def fftresample(S, npoints, axis=1, reflect=False):
+    """Resample a signal using discrete fourier transform. The signal
     is transformed in the fourier domain and then padded or truncated
     to the correct sampling frequency.  This should be equivalent to
     a sinc resampling.
+
+    Set reflect to True to pad the sample with reflected copies on either end.
+    Do this if the shape of the spike really matters.
+
     """
-    # TODO use fftw?
+    from numpy import column_stack
     from numpy.fft import rfft, irfft
+    if reflect:
+        Srev = S[:,::-1]
+        S = column_stack([Srev, S, Srev])
+        npoints *= 3
     Sf = rfft(S, axis=axis)
-    return (1. * npoints / S.shape[axis]) * irfft(Sf, npoints, axis=axis)
+    Srs = (1. * npoints / S.shape[axis]) * irfft(Sf, npoints, axis=axis)
+    if reflect:
+        npoints /= 3
+        return Srs[:,npoints:npoints*2]
+    else:
+        return Srs

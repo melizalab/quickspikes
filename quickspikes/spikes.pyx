@@ -138,6 +138,5 @@ def subthreshold(double[:] samples, times,
 
 
 
-
 # Variables:
 # End:

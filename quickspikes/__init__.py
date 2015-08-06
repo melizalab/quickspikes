@@ -7,3 +7,4 @@ Created Wed Jul 24 09:26:36 2013
 """
 
 from spikes import detector, peaks, subthreshold
+from tools import realign_spikes

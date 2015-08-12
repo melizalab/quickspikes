@@ -7,6 +7,9 @@ Created Wed Jul 24 09:26:36 2013
 """
 from cython.view cimport array as cvarray
 
+cdef extern from "math.h":
+    double NAN
+
 cdef enum DetectorState:
     BELOW_THRESHOLD = 1
     BEFORE_PEAK = 2
@@ -116,7 +119,7 @@ def peaks(double[:] samples, times, int n_before=75, int n_after=400):
 
 
 def subthreshold(double[:] samples, times,
-                 double v_thresh=-50, double dv_thresh=0, min_size=10):
+                 double v_thresh=-50, double dv_thresh=0, int min_size=10):
     """Removes spikes from time series
 
     Spikes are removed from the voltage trace by beginning at each peak and
@@ -134,8 +137,36 @@ def subthreshold(double[:] samples, times,
     Returns a copy of samples with the data points around spike times set to NaN
 
     """
-    pass
-
+    cdef int i, j, spikestart, spikestop
+    cdef int nsamples = samples.size
+    cdef double[:] out = samples.copy()
+    for i in times:
+        if samples[i] < v_thresh:
+            print "spike peak at %d is below threshold; skipping"
+            continue
+        # iterate back and blank out samples before v or dv cross threshold
+        j = 0
+        spikestart = i
+        while spikestart >= 0:
+            if (j > min_size and
+                (samples[spikestart + 1] - samples[spikestart] < dv_thresh) or
+                (samples[spikestart] < v_thresh)):
+                break
+            out[spikestart] = NAN
+            j += 1
+            spikestart -= 1
+        # iterate back and blank out samples before v or dv cross threshold
+        j = 0
+        spikestop = i
+        while spikestop < nsamples:
+            if (j > min_size and
+                (samples[spikestop - 1] - samples[spikestop] < dv_thresh) or
+                (samples[spikestop] < v_thresh)):
+                break
+            out[spikestop] = NAN
+            j += 1
+            spikestop += 1
+    return out
 
 
 # Variables:

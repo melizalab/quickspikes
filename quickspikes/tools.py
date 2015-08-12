@@ -48,6 +48,7 @@ def find_peaks(spikes, peak, window):
     r = slice(peak - window, peak + window + 1)
     return spikes[:,r].argmax(1) - window
 
+
 def fftresample(S, npoints, axis=1, reflect=False):
     """Resample a signal using discrete fourier transform. The signal
     is transformed in the fourier domain and then padded or truncated

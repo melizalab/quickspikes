@@ -6,6 +6,10 @@ Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Fri Jul 12 14:05:16 2013
 """
 
+def filter_times(times, min, max):
+    return filter(lambda t: (t > min) and (t < max), times)
+
+
 def realign_spikes(times, spikes, upsample, jitter=1, reflect_fft=False):
     """Realign spikes to their peaks using bandwidth-limited resampling
 

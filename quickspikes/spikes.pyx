@@ -103,19 +103,19 @@ def peaks(double[:] samples, times, int n_before=75, int n_after=400):
     Returns a 2D array with len(times) rows and (n_before + n_after) columns
     containing the values surrounding the sample indices in times.
 
+    Note: all values of times must be greater than n_before and less than
+    samples.size - n_after. See `tools.filter_spikes`
+
     """
     cdef int i = 0
     cdef int event
     cdef double [:, :] out = cvarray(shape=(len(times), n_before + n_after),
                                      itemsize=sizeof(double), format="d")
     for event in times:
-        if (event - n_before < 0) or (event + n_after > samples.size):
-            continue
-        else:
-            out[i,:] = samples[event-n_before:event+n_after]
-            i += 1
+        out[i,:] = samples[event-n_before:event+n_after]
+        i += 1
 
-    return out[:i,:]
+    return out
 
 
 def subthreshold(double[:] samples, times,

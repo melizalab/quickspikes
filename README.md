@@ -48,3 +48,5 @@ There is also a reference copy of an ANSI C implementation and an `f2py` wrapper
 
 Free for use under the terms of the GNU General Public License. See [[COPYING]]
 for details.
+
+[![Build Status](https://travis-ci.org/melizalab/quickspikes.png?branch=master)](https://travis-ci.org/melizalab/quickspikes)

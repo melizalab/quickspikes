@@ -42,9 +42,8 @@ def test_extract_spikes():
 
     n_before = 20
     n_after = 300
-    times = [t + t_peak for t in a_times]
-    x = peaks(a_recording, filter_times(times,n_before, a_recording.size - n_after),
-              n_before=n_before, n_after=n_after)
+    times = filter_times([t + t_peak for t in a_times], n_before, a_recording.size - n_after)
+    x = peaks(a_recording, times, n_before=n_before, n_after=n_after)
     # last peak should get dropped
     assert_equal(x.shape[0], len(a_times) - 1)
     assert_equal(x.shape[1], 320)

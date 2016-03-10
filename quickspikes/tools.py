@@ -7,7 +7,7 @@ Created Fri Jul 12 14:05:16 2013
 """
 
 def filter_times(times, min, max):
-    return filter(lambda t: (t > min) and (t < max), times)
+    return tuple(t for t in times if (t > min) and (t < max))
 
 
 def realign_spikes(times, spikes, upsample, jitter=1, reflect_fft=False):

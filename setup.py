@@ -24,12 +24,12 @@ _spikes = Extension('quickspikes.spikes', sources=['quickspikes/spikes' + SUFFIX
 
 setup(
     name = 'quickspikes',
-    version = '1.1.0',
+    version = '1.2.0',
     packages=find_packages(exclude=["*test*"]),
     ext_modules = [_spikes],
     cmdclass = {'build_ext': build_ext},
 
-    install_requires = ["numpy>=1.3"],
+    install_requires = ["numpy>=1.9"],
     scripts = [],
 
     description = "detect and extract spikes in time series data",

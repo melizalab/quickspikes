@@ -42,6 +42,16 @@ times = reldet.send(samples)
 
 To detect negative-going events, you'll need to invert the signal.
 
+There are also some functions you can use to extract and align spike waveforms. Given a list of times returned from the `detector.send()` method, to extract waveforms starting 30 samples before the peak and ending 270 samples after:
+
+```python
+f_times = qs.filter_times(times, 30, samples.size - 270)
+spikes = qs.peaks(samples, f_times, 30, 270)
+times, aligned = qs.realign_spikes(f_times, spikes, upsample=3, jitter=4)
+```
+
+Note that the list of event times may need to be filtered to avoid trying to access data points outside the bounds of the input time series. If you care about these events, you'll need to pad your input signal. The `realign_spikes` function uses a sinc-based resampling to more accurately locate the peak of the event.
+
 There is also a reference copy of an ANSI C implementation and an `f2py` wrapper in `f2py/`. This algorithm is slightly less efficient and flexible, but may give better results if included directly in a C codebase.
 
 ### License

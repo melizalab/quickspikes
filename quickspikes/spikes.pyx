@@ -5,7 +5,7 @@
 Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Wed Jul 24 09:26:36 2013
 """
-from cython.view cimport array as cvarray
+from cython cimport view, boundscheck
 
 cdef extern from "math.h":
     double NAN
@@ -97,6 +97,7 @@ cdef class detector:
         self.state = BELOW_THRESHOLD
 
 
+@boundscheck(False)
 def peaks(double[:] samples, times, int n_before=75, int n_after=400):
     """Extracts samples around times
 
@@ -107,13 +108,19 @@ def peaks(double[:] samples, times, int n_before=75, int n_after=400):
     samples.size - n_after. See `tools.filter_spikes`
 
     """
-    cdef int i = 0
-    cdef int event
-    cdef double [:, :] out = cvarray(shape=(len(times), n_before + n_after),
-                                     itemsize=sizeof(double), format="d")
-    for event in times:
-        out[i,:] = samples[event-n_before:event+n_after]
-        i += 1
+    cdef size_t i = 0
+    cdef size_t event, start, stop
+    cdef double [:, :] out = view.array(shape=(len(times), n_before + n_after),
+                                        itemsize=sizeof(double), format="d")
+    for i,event in enumerate(times):
+        start = event - n_before
+        stop = event + n_after
+        if start < 0:
+            raise ValueError("spike %d waveform starts before input data" % i)
+        elif stop >= samples.size:
+            raise ValueError("spike %d waveform ends after input data" % i)
+        else:
+            out[i,:] = samples[event-n_before:event+n_after]
 
     return out
 

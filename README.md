@@ -60,3 +60,7 @@ Free for use under the terms of the GNU General Public License. See [[COPYING]]
 for details.
 
 [![Build Status](https://travis-ci.org/melizalab/quickspikes.png?branch=master)](https://travis-ci.org/melizalab/quickspikes)
+
+If you use this code in an academic work, citations are appreciated. There is no methods paper describing the algorithm, but the most relevant reference is:
+
+C. D. Meliza and D. Margoliash (2012). Emergence of selectivity and tolerance in the avian auditory cortex. Journal of Neuroscience, doi:10.1523/JNEUROSCI.0845-12.2012

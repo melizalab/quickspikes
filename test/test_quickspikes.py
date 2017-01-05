@@ -30,6 +30,7 @@ def test_detect_extrac_spikes():
     det = detector(2000, 40)
     assert_sequence_equal(det.send(a_recording), [t + t_peak for t in a_times])
     assert_sequence_equal(det.send(-a_recording), [t + t_trough for t in a_times])
+    assert_sequence_equal(det(a_recording), [t + t_peak for t in a_times])
 
 @raises(ValueError)
 def test_extract_spikes_nofilter():

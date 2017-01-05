@@ -62,9 +62,9 @@ cdef class detector:
     def send(self, double[:] samples):
         """Detect spikes in a time series.
 
-        Returns a list of indices corresponding to the peaks (or troughs) in the
-        data. Retains state between calls. The detector should be reset if there
-        is a gap in the signal.
+        Returns a list of indices corresponding to the peaks in the data.
+        Retains state between calls. Call reset() if there is a gap in the
+        signal.
 
         """
         cdef double x
@@ -91,6 +91,16 @@ cdef class detector:
                 if x < self.scaled_thresh:
                     self.state = BELOW_THRESHOLD
         return out
+
+    def __call__(self, double[:] samples):
+        """Detect spikes in a time series.
+
+        Returns a list of indices corresponding to the peaks in the data.
+        Resets state between calls.
+
+        """
+        self.reset()
+        return self.send(samples)
 
     def reset(self):
         """Reset the detector's internal state"""

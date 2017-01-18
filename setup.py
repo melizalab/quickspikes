@@ -36,9 +36,9 @@ setup(
     long_description = "detect and extract spikes in time series data",
 
     author = "Dan Meliza",
-    author_email = "dan AT the domain 'meliza.org'",
+    author_email = "dan@meliza.org",
     maintainer = "Dan Meliza",
-    maintainer_email = "dan AT the domain 'meliza.org'",
+    maintainer_email = "dan@meliza.org",
     url= 'http://melizalab.github.com/quickspikes',
     download_url= 'https://github.com/downloads/melizalab/quickspikes',
     test_suite = 'nose.collector',

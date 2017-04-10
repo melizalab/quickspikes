@@ -5,6 +5,9 @@
 Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Fri Jul 12 14:05:16 2013
 """
+from __future__ import division
+from __future__ import print_function
+
 
 def filter_times(times, min, max):
     return tuple(t for t in times if (t > min) and (t < max))
@@ -28,14 +31,14 @@ def realign_spikes(times, spikes, upsample, jitter=1, reflect_fft=False):
 
     # first infer the expected peak time
     expected_peak = mean(spikes, 0).argmax() * upsample
-    spikes = fftresample(spikes, nsamples * upsample, reflect=reflect_fft)
+    spikes = fftresample(spikes, int(nsamples * upsample), reflect=reflect_fft)
     # find peaks within upsample samples of mean peak
     shift = find_peaks(spikes, expected_peak, upsample * jitter)
     start = shift + upsample * jitter
     nshifted = (nsamples - 2 * jitter) * upsample
     shifted = zeros((nevents, nshifted))
-    for i,spike in enumerate(spikes):
-        shifted[i,:] = spike[start[i]:start[i]+nshifted]
+    for i, spike in enumerate(spikes):
+        shifted[i, :] = spike[start[i]:start[i]+nshifted]
     return (asarray(times) * upsample + start, shifted)
 
 
@@ -50,7 +53,7 @@ def find_peaks(spikes, peak, window):
 
     """
     r = slice(peak - window, peak + window + 1)
-    return spikes[:,r].argmax(1) - window
+    return spikes[:, r].argmax(1) - window
 
 
 def fftresample(S, npoints, axis=1, reflect=False):
@@ -66,13 +69,13 @@ def fftresample(S, npoints, axis=1, reflect=False):
     from numpy import column_stack
     from numpy.fft import rfft, irfft
     if reflect:
-        Srev = S[:,::-1]
+        Srev = S[:, ::-1]
         S = column_stack([Srev, S, Srev])
         npoints *= 3
     Sf = rfft(S, axis=axis)
     Srs = (1. * npoints / S.shape[axis]) * irfft(Sf, npoints, axis=axis)
     if reflect:
-        npoints /= 3
-        return Srs[:,npoints:npoints*2]
+        npoints = npoints // 3
+        return Srs[:, npoints:npoints*2]
     else:
         return Srs

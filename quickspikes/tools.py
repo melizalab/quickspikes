@@ -13,13 +13,15 @@ def filter_times(times, min, max):
     return tuple(t for t in times if (t > min) and (t < max))
 
 
-def realign_spikes(times, spikes, upsample, jitter=1, reflect_fft=False):
+def realign_spikes(times, spikes, upsample, jitter=1, reflect_fft=False, expected_peak=None):
     """Realign spikes to their peaks using bandwidth-limited resampling
 
     times    : one-dimensional array of spike times, in units of samples
     spikes   : array of spike waveforms, with dimensions (nspikes, npoints)
     upsample : integer, the factor by which to upsample the data for realignment
     jitter   : samples (in original data) to search for true peak
+    expected_peak : if supplied, searches around this index for the peak. If not supplied,
+                    uses the argmax of the mean spike
 
     Returns (times, spikes), with the sampling rate increased by a factor of upsample
 
@@ -30,7 +32,8 @@ def realign_spikes(times, spikes, upsample, jitter=1, reflect_fft=False):
     nevents, nsamples = spikes.shape
 
     # first infer the expected peak time
-    expected_peak = mean(spikes, 0).argmax() * upsample
+    if expected_peak is None:
+        expected_peak = mean(spikes, 0).argmax() * upsample
     spikes = fftresample(spikes, int(nsamples * upsample), reflect=reflect_fft)
     # find peaks within upsample samples of mean peak
     shift = find_peaks(spikes, expected_peak, upsample * jitter)
@@ -71,7 +74,7 @@ def fftresample(S, npoints, axis=1, reflect=False):
     if reflect:
         Srev = S[:, ::-1]
         S = column_stack([Srev, S, Srev])
-        npoints *= 3
+        npoints = npoints * 3
     Sf = rfft(S, axis=axis)
     Srs = (1. * npoints / S.shape[axis]) * irfft(Sf, npoints, axis=axis)
     if reflect:

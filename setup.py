@@ -24,7 +24,7 @@ _spikes = Extension('quickspikes.spikes', sources=['quickspikes/spikes' + SUFFIX
 
 setup(
     name = 'quickspikes',
-    version = '1.3.1',
+    version = '1.3.2',
     packages=find_packages(exclude=["*test*"]),
     ext_modules = [_spikes],
     cmdclass = {'build_ext': build_ext},

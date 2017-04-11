@@ -40,6 +40,6 @@ setup(
     maintainer = "Dan Meliza",
     maintainer_email = "dan@meliza.org",
     url= 'http://github.com/melizalab/quickspikes',
-    download_url = 'https://github.com/melizalab/quickspikes/archive/1.3.3.tar.gz'
+    download_url = 'https://github.com/melizalab/quickspikes/archive/1.3.3.tar.gz',
     test_suite = 'nose.collector',
     )

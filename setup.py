@@ -24,7 +24,7 @@ _spikes = Extension('quickspikes.spikes', sources=['quickspikes/spikes' + SUFFIX
 
 setup(
     name = 'quickspikes',
-    version = '1.3.2',
+    version = '1.3.3',
     packages=find_packages(exclude=["*test*"]),
     ext_modules = [_spikes],
     cmdclass = {'build_ext': build_ext},
@@ -39,7 +39,7 @@ setup(
     author_email = "dan@meliza.org",
     maintainer = "Dan Meliza",
     maintainer_email = "dan@meliza.org",
-    url= 'http://melizalab.github.com/quickspikes',
-    download_url= 'https://github.com/downloads/melizalab/quickspikes',
+    url= 'http://github.com/melizalab/quickspikes',
+    download_url = 'https://github.com/melizalab/quickspikes/archive/1.3.3.tar.gz'
     test_suite = 'nose.collector',
     )

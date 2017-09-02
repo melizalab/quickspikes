@@ -51,21 +51,22 @@ other kinds of time series.
 #####
 
 setup(
-    name = 'quickspikes',
-    version = VERSION,
+    name='quickspikes',
+    version=VERSION,
     packages=find_packages(exclude=["*test*"]),
-    ext_modules = [_spikes],
-    cmdclass = {'build_ext': build_ext},
+    ext_modules=[_spikes],
+    cmdclass={'build_ext': build_ext},
 
-    install_requires = ["numpy>=1.10"],
-    scripts = [],
+    install_requires=["numpy>=1.10"],
+    scripts=[],
 
-    description = "detect and extract spikes in time series data",
-    long_description = long_desc,
+    description="detect and extract spikes in time series data",
+    long_description=long_desc,
+    classifiers=[x for x in cls_txt.split("\n") if x],
 
-    author = "Dan Meliza",
-    maintainer = "Dan Meliza",
-    url= 'http://github.com/melizalab/quickspikes',
-    download_url = 'https://github.com/melizalab/quickspikes/archive/%s.tar.gz' % VERSION,
-    test_suite = 'nose.collector',
-    )
+    author="Dan Meliza",
+    maintainer="Dan Meliza",
+    url='http://github.com/melizalab/quickspikes',
+    download_url='https://github.com/melizalab/quickspikes/archive/%s.tar.gz' % VERSION,
+    test_suite='nose.collector',
+)

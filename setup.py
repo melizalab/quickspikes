@@ -2,12 +2,9 @@
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 from setuptools import setup, find_packages, Extension
-
-import numpy
-try:
-    numpy_include = numpy.get_include()
-except AttributeError:
-    numpy_include = numpy.get_numpy_include()
+import sys
+if sys.version_info[:2] < (2, 7) or (3, 0) <= sys.version_info[:2] < (3, 2):
+    raise RuntimeError("Python version 2.7 or >= 3.2 required.")
 
 try:
     from Cython.Distutils import build_ext
@@ -16,30 +13,59 @@ except ImportError:
     from distutils.command.build_ext import build_ext
     SUFFIX = '.c'
 
+def numpy_include():
+    import numpy
+    try:
+        return numpy.get_include()
+    except AttributeError:
+        return numpy.get_numpy_include()
+
 compiler_settings = {
     'include_dirs' : [numpy_include]
     }
 _spikes = Extension('quickspikes.spikes', sources=['quickspikes/spikes' + SUFFIX],
                     **compiler_settings)
 
+# ---- Metadata ---- #
+VERSION = '1.3.3'
+
+cls_txt = """
+Development Status :: 5 - Production/Stable
+Intended Audience :: Science/Research
+License :: OSI Approved :: GNU General Public License (GPL)
+Programming Language :: Python
+Topic :: Scientific/Engineering
+Operating System :: Unix
+Operating System :: POSIX :: Linux
+Operating System :: MacOS :: MacOS X
+Natural Language :: English
+"""
+
+long_desc = """
+This is a very basic but very fast window discriminator for detecting and
+extracting spikes in a time series. It was developed for analyzing extracellular
+neural recordings, but also works with intracellular data and probably many
+other kinds of time series.
+"""
+
+#####
+
 setup(
     name = 'quickspikes',
-    version = '1.3.3',
+    version = VERSION,
     packages=find_packages(exclude=["*test*"]),
     ext_modules = [_spikes],
     cmdclass = {'build_ext': build_ext},
 
-    install_requires = ["numpy>=1.9"],
+    install_requires = ["numpy>=1.10"],
     scripts = [],
 
     description = "detect and extract spikes in time series data",
-    long_description = "detect and extract spikes in time series data",
+    long_description = long_desc,
 
     author = "Dan Meliza",
-    author_email = "dan@meliza.org",
     maintainer = "Dan Meliza",
-    maintainer_email = "dan@meliza.org",
     url= 'http://github.com/melizalab/quickspikes',
-    download_url = 'https://github.com/melizalab/quickspikes/archive/1.3.3.tar.gz',
+    download_url = 'https://github.com/melizalab/quickspikes/archive/%s.tar.gz' % VERSION,
     test_suite = 'nose.collector',
     )

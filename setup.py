@@ -13,21 +13,11 @@ except ImportError:
     from distutils.command.build_ext import build_ext
     SUFFIX = '.c'
 
-def numpy_include():
-    import numpy
-    try:
-        return numpy.get_include()
-    except AttributeError:
-        return numpy.get_numpy_include()
+_spikes = Extension('quickspikes.spikes', sources=['quickspikes/spikes' + SUFFIX])
 
-compiler_settings = {
-    'include_dirs' : [numpy_include]
-    }
-_spikes = Extension('quickspikes.spikes', sources=['quickspikes/spikes' + SUFFIX],
-                    **compiler_settings)
 
 # ---- Metadata ---- #
-VERSION = '1.3.3'
+VERSION = '1.3.4'
 
 cls_txt = """
 Development Status :: 5 - Production/Stable
@@ -57,7 +47,6 @@ setup(
     ext_modules=[_spikes],
     cmdclass={'build_ext': build_ext},
 
-    install_requires=["numpy>=1.10"],
     scripts=[],
 
     description="detect and extract spikes in time series data",
@@ -67,6 +56,5 @@ setup(
     author="Dan Meliza",
     maintainer="Dan Meliza",
     url='http://github.com/melizalab/quickspikes',
-    download_url='https://github.com/melizalab/quickspikes/archive/%s.tar.gz' % VERSION,
     test_suite='nose.collector',
 )

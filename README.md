@@ -1,6 +1,9 @@
 
 ## quickspikes
 
+[![Build Status](https://travis-ci.org/melizalab/quickspikes.png?branch=master)](https://travis-ci.org/melizalab/quickspikes)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1246810.svg)](https://doi.org/10.5281/zenodo.1246810)
+
 This is a very basic but very fast window discriminator for detecting and
 extracting spikes in a time series. It was developed for analyzing extracellular
 neural recordings, but also works with intracellular data and probably many
@@ -58,8 +61,6 @@ There is also a reference copy of an ANSI C implementation and an `f2py` wrapper
 
 Free for use under the terms of the GNU General Public License. See [[COPYING]]
 for details.
-
-[![Build Status](https://travis-ci.org/melizalab/quickspikes.png?branch=master)](https://travis-ci.org/melizalab/quickspikes)
 
 If you use this code in an academic work, citations are appreciated. There is no methods paper describing the algorithm, but the most relevant reference is:
 

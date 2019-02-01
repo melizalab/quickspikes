@@ -17,7 +17,7 @@ _spikes = Extension('quickspikes.spikes', sources=['quickspikes/spikes' + SUFFIX
 
 
 # ---- Metadata ---- #
-VERSION = '1.3.4'
+VERSION = '1.3.5'
 
 cls_txt = """
 Development Status :: 5 - Production/Stable

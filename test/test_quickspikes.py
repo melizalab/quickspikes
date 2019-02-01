@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 
+import sys
 from nose.tools import *
 import numpy as nx
+
+if sys.hexversion < 0x03000000:
+    FileNotFoundError = IOError
 
 # a nice surrogate spike with 20 samples before peak and 40 after
 a_spike = nx.array([-1290,  -483,  -136,  -148,  -186,   637,   328,    41,    63,

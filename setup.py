@@ -52,6 +52,7 @@ setup(
     description="detect and extract spikes in time series data",
     long_description=long_desc,
     classifiers=[x for x in cls_txt.split("\n") if x],
+    setup_requires=["numpy>=1.10"],
 
     author="Dan Meliza",
     maintainer="Dan Meliza",

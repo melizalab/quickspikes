@@ -19,7 +19,10 @@ a_times = [100, 400, 1200, 1500, 5000, 5200, 6123, 9730]
 for t in a_times:
     a_recording[t:t + a_spike.size] += a_spike
 
-b_recording = nx.load("test/intra_spike.npy").astype('d')
+try:
+    b_recording = nx.load("intra_spike.npy").astype('d')
+except FileNotFoundError:
+    b_recording = nx.load("test/intra_spike.npy").astype('d')
 b_times = [7635, 8412, 9363, 10424, 11447, 12661, 13887, 15079, 16373,
            17753, 19168, 20682, 22357, 23979, 25574, 27209, 28989,
            30508, 32088, 33778]

@@ -15,7 +15,7 @@ Here's how it works:
 
 The algorithm iterates through the time series. When the signal crosses the threshold (1) going away from zero, the algorithm then looks for a peak (2) that occurs within some number of samples from the threshold crossing. The number of samples can be adjusted to filter out broad spikes that are likely to be artifacts. If a peak occurs, its sample index is added to an array. These times can be used as-is, or they can be used to extract samples to either side of the peak for further analysis (e.g. spike sorting).
 
-The algorithm uses a streaming pattern, so it's suitable for realtime operations. Many signals of interest will require highpass filtering to remove slow variations.
+The algorithm uses a streaming pattern (i.e., it processes chunks of data and keeps its state between chunks), so it's suitable for realtime operations. Many signals of interest will require highpass filtering to remove slow variations.
 
 ### Installation and Use
 
@@ -35,7 +35,17 @@ det = qs.detector(1000, 30)
 times = det.send(samples)
 ```
 
-You can adjust the detector's threshold to compensate for shifts in the mean and standard deviation of the signal:
+You can continue sending chunks of data by calling `send()`. The detector will keep its state between calls, so you can detect spikes that occur on chunk boundaries. For example, if you're receiving data from some kind of generator, you could use a pattern like this:
+
+``` python
+for chunk in my_data_generator():
+    times = det.send(chunk)
+    # process times
+```
+
+Conversely, if the data are not contiguous, you should reinitialize the detector for each chunk.
+
+You can adjust the detector's threshold at any point, for example to compensate for shifts in the mean and standard deviation of the signal:
 
 ```python
 reldet = qs.detector(2.5, 30)

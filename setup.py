@@ -3,18 +3,8 @@
 # -*- mode: python -*-
 from setuptools import setup, find_packages, Extension
 import sys
-if sys.version_info[:2] < (2, 7) or (3, 0) <= sys.version_info[:2] < (3, 2):
-    raise RuntimeError("Python version 2.7 or >= 3.2 required.")
-
-try:
-    from Cython.Distutils import build_ext
-    SUFFIX = '.pyx'
-except ImportError:
-    from distutils.command.build_ext import build_ext
-    SUFFIX = '.c'
-
-_spikes = Extension('quickspikes.spikes', sources=['quickspikes/spikes' + SUFFIX])
-
+if sys.version_info[:2] < (2, 7) or (3, 0) <= sys.version_info[:2] < (3, 5):
+    raise RuntimeError("Python version 2.7 or >= 3.5 required.")
 
 # ---- Metadata ---- #
 VERSION = '1.3.5'
@@ -40,20 +30,22 @@ other kinds of time series.
 
 #####
 
+from Cython.Distutils import build_ext
+_spikes = Extension('quickspikes.spikes', sources=['quickspikes/spikes.pyx'])
+
 setup(
     name='quickspikes',
     version=VERSION,
     packages=find_packages(exclude=["*test*"]),
     ext_modules=[_spikes],
     cmdclass={'build_ext': build_ext},
-
     scripts=[],
-
     description="detect and extract spikes in time series data",
     long_description=long_desc,
     classifiers=[x for x in cls_txt.split("\n") if x],
-    setup_requires=["numpy>=1.10"],
-
+    setup_requires=["numpy", "Cython"],
+    install_requires=["numpy"],
+    test_requires=["nose"],
     author="Dan Meliza",
     maintainer="Dan Meliza",
     url='http://github.com/melizalab/quickspikes',

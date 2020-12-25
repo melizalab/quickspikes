@@ -25,7 +25,7 @@ The algorithm is written in cython. You can get a python package from PyPI:
 
 Or to build from a copy of the repository:
 
-    setup.py install
+    pip install .
 
 To detect peaks, you instantiate the detector with parameters that match the events you want to detect, and then send the detector chunks of data. For example, an extracellular recording at 20 kHz stored in 16-bit integers may have a noise floor around 2000, and the spikes will be on the order of 20 samples wide:
 

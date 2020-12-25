@@ -43,11 +43,10 @@ setup(
     description="detect and extract spikes in time series data",
     long_description=long_desc,
     classifiers=[x for x in cls_txt.split("\n") if x],
-    setup_requires=["numpy", "Cython"],
     install_requires=["numpy"],
-    test_requires=["nose"],
+
     author="Dan Meliza",
     maintainer="Dan Meliza",
     url='http://github.com/melizalab/quickspikes',
-    test_suite='nose.collector',
+    test_suite="tests"
 )

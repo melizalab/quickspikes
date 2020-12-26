@@ -7,7 +7,7 @@ if sys.version_info[:2] < (2, 7) or (3, 0) <= sys.version_info[:2] < (3, 5):
     raise RuntimeError("Python version 2.7 or >= 3.5 required.")
 
 # ---- Metadata ---- #
-VERSION = '1.3.5'
+VERSION = '1.3.7'
 
 cls_txt = """
 Development Status :: 5 - Production/Stable

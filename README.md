@@ -1,7 +1,6 @@
 
 ## quickspikes
 
-[![Build Status](https://travis-ci.org/melizalab/quickspikes.png?branch=master)](https://travis-ci.org/melizalab/quickspikes)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1246809.svg)](https://doi.org/10.5281/zenodo.1246809)
 
 This is a very basic but very fast window discriminator for detecting and

@@ -3,11 +3,11 @@
 # -*- mode: python -*-
 from setuptools import setup, find_packages, Extension
 import sys
-if sys.version_info[:2] < (2, 7) or (3, 0) <= sys.version_info[:2] < (3, 5):
-    raise RuntimeError("Python version 2.7 or >= 3.5 required.")
+if sys.version_info[:2] < (3, 7)
+    raise RuntimeError("Python version >= 3.7 required.")
 
 # ---- Metadata ---- #
-VERSION = '1.3.7'
+VERSION = '1.3.8'
 
 cls_txt = """
 Development Status :: 5 - Production/Stable

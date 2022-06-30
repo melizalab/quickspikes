@@ -5,7 +5,15 @@
 Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Wed Jul 24 09:26:36 2013
 """
+import numpy as np
 from cython cimport view, boundscheck
+
+ctypedef fused sample_t:
+    short
+    int
+    long
+    float
+    double
 
 cdef extern from "math.h":
     double NAN
@@ -15,7 +23,7 @@ cdef enum DetectorState:
     BEFORE_PEAK = 2
     AFTER_PEAK = 3
 
-cdef inline bint compare_sign(double x, double y):
+cdef inline bint compare_sign(sample_t x, sample_t y):
     """return True iff ((x > 0) && (y > 0)) || ((x < 0) && (y < 0))"""
     return ((x >= 0) and (y >= 0)) or ((x < 0) and (y < 0))
 
@@ -108,7 +116,7 @@ cdef class detector:
 
 
 @boundscheck(False)
-def peaks(double[:] samples, times, int n_before=75, int n_after=400):
+def peaks(sample_t[:] samples, times, int n_before=75, int n_after=400):
     """Extracts samples around times
 
     Returns a 2D array with len(times) rows and (n_before + n_after) columns
@@ -120,8 +128,18 @@ def peaks(double[:] samples, times, int n_before=75, int n_after=400):
     """
     cdef size_t i = 0
     cdef size_t event, start, stop
-    cdef double [:, :] out = view.array(shape=(len(times), n_before + n_after),
-                                        itemsize=sizeof(double), format="d")
+    if sample_t is short:
+        dtype = np.int16
+    elif sample_t is int:
+        dtype = np.int32
+    elif sample_t is long:
+        dtype = np.int64
+    elif sample_t is float:
+        dtype = np.float
+    elif sample_t is double:
+        dtype = np.double
+    out = np.empty(shape=(len(times), n_before + n_after), dtype=dtype)
+    cdef sample_t [:, :] arr = out
     for i,event in enumerate(times):
         start = event - n_before
         stop = event + n_after
@@ -130,7 +148,7 @@ def peaks(double[:] samples, times, int n_before=75, int n_after=400):
         elif stop >= samples.size:
             raise ValueError("spike %d waveform ends after input data" % i)
         else:
-            out[i,:] = samples[event-n_before:event+n_after]
+            arr[i,:] = samples[event-n_before:event+n_after]
 
     return out
 

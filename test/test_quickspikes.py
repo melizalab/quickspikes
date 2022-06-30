@@ -19,10 +19,12 @@ a_spike = np.array([-1290,  -483,  -136,  -148,  -186,   637,   328,    41,    6
                     -3,  -786,   -47,  -266,  -963,  -365], dtype=np.int16)
 t_peak = a_spike.argmax()
 t_trough = a_spike.argmin()
-a_recording = np.zeros(10000, dtype='d')
+a_recording_dbl = np.zeros(10000, dtype='d')
+a_recording_int = np.zeros(10000, dtype=a_spike.dtype)
 a_times = [100, 400, 1200, 1500, 5000, 5200, 6123, 9730]
 for t in a_times:
-    a_recording[t:t + a_spike.size] += a_spike
+    a_recording_dbl[t:t + a_spike.size] += a_spike
+    a_recording_int[t:t + a_spike.size] += a_spike
 
 try:
     b_recording = np.load("intra_spike.npy").astype('d')
@@ -38,27 +40,37 @@ class TestQuickspikes(unittest.TestCase):
         from quickspikes.spikes import detector
         det = detector(2000, 40)
 
-        self.assertSequenceEqual(det.send(a_recording), [t + t_peak for t in a_times])
-        self.assertSequenceEqual(det.send(-a_recording), [t + t_trough for t in a_times])
-        self.assertSequenceEqual(det(a_recording), [t + t_peak for t in a_times])
+        self.assertSequenceEqual(det.send(a_recording_dbl), [t + t_peak for t in a_times])
+        self.assertSequenceEqual(det.send(-a_recording_dbl), [t + t_trough for t in a_times])
+        self.assertSequenceEqual(det(a_recording_dbl), [t + t_peak for t in a_times])
 
 
     def test_extract_spikes_nofilter(self):
         from quickspikes.spikes import peaks
         with self.assertRaises(ValueError):
-            x = peaks(a_recording, [t + t_peak for t in a_times], n_before=20, n_after=300)
+            x = peaks(a_recording_dbl, [t + t_peak for t in a_times], n_before=20, n_after=300)
 
-    def test_extract_spikes(self):
+    def test_extract_spikes_double(self):
         from quickspikes import peaks, filter_times
 
         n_before = 20
         n_after = 300
-        times = filter_times([t + t_peak for t in a_times], n_before, a_recording.size - n_after)
-        x = peaks(a_recording, times, n_before=n_before, n_after=n_after)
+        times = filter_times([t + t_peak for t in a_times], n_before, a_recording_dbl.size - n_after)
+        x = peaks(a_recording_dbl, times, n_before=n_before, n_after=n_after)
         # last peak should get dropped
         self.assertEqual(x.shape[0], len(a_times) - 1)
         self.assertEqual(x.shape[1], 320)
+        self.assertTrue(np.all(a_spike == x[0,:a_spike.size]))
 
+    def test_extract_spikes_integer(self):
+        from quickspikes import peaks, filter_times
+        n_before = 20
+        n_after = 300
+        times = filter_times([t + t_peak for t in a_times], n_before, a_recording_int.size - n_after)
+        x = peaks(a_recording_int, times, n_before=n_before, n_after=n_after)
+        # last peak should get dropped
+        self.assertEqual(x.shape[0], len(a_times) - 1)
+        self.assertEqual(x.shape[1], 320)
         self.assertTrue(np.all(a_spike == x[0,:a_spike.size]))
 
     def test_detect_intrac_spikes(self):

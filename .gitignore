@@ -4,5 +4,6 @@
 __pycache__/
 build/
 dist/
+venv/
 quickspikes/*.c
 /quickspikes.egg-info/

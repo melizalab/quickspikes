@@ -7,7 +7,7 @@ if sys.version_info[:2] < (3, 6):
     raise RuntimeError("Python version >= 3.6 required.")
 
 # ---- Metadata ---- #
-VERSION = '1.3.8'
+VERSION = '1.3.9'
 
 cls_txt = """
 Development Status :: 5 - Production/Stable

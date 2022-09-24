@@ -68,7 +68,7 @@ cdef class detector:
         """
         self.scaled_thresh = self.thresh * sd + mean
 
-    def send(self, double[:] samples):
+    def send(self, sample_t[:] samples):
         """Detect spikes in a time series.
 
         Returns a list of indices corresponding to the peaks in the data.
@@ -77,7 +77,7 @@ cdef class detector:
 
         """
         cdef double x
-        cdef size_t i = 0
+        cdef int i = 0
         out = []
 
         for i in range(samples.shape[0]):
@@ -136,7 +136,7 @@ def peaks(sample_t[:] samples, times, size_t n_before=75, size_t n_after=400):
     elif sample_t is long:
         dtype = np.int64
     elif sample_t is float:
-        dtype = np.float
+        dtype = np.float32
     elif sample_t is double:
         dtype = np.double
     out = np.empty(shape=(len(times), n_before + n_after), dtype=dtype)
@@ -157,8 +157,8 @@ def peaks(sample_t[:] samples, times, size_t n_before=75, size_t n_after=400):
 def find_run(sample_t[:] values, sample_t thresh, size_t min_run):
     """ Return the index of the first element in values that starts a run of at
     least min_run in length, or None if no such run exists. """
-    cdef size_t i
-    cdef size_t run_start = -1
+    cdef int i
+    cdef int run_start = -1
     cdef bint in_run = False
     for i in range(values.size):
         if values[i] > thresh:

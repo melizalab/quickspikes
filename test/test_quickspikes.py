@@ -24,13 +24,12 @@ for t in a_times:
     a_recording_dbl[t:t + a_spike.size] += a_spike
     a_recording_int[t:t + a_spike.size] += a_spike
 
-try:
-    b_recording = np.load("intra_spike.npy").astype('d')
-except FileNotFoundError:
-    b_recording = np.load("test/intra_spike.npy").astype('d')
+b_recording = np.load("test/intra_spike.npy")
 b_times = [7635, 8412, 9363, 10424, 11447, 12661, 13887, 15079, 16373,
            17753, 19168, 20682, 22357, 23979, 25574, 27209, 28989,
            30508, 32088, 33778]
+c_recording = np.load("test/intra_spike_narrow.npy")
+c_times = [8325, 8816, 9368, 9985, 10619, 11276, 11968, 12610, 13240, 13900, 14485, 15193, 15840, 16601]
 
 
 class TestQuickspikes(unittest.TestCase):
@@ -43,7 +42,7 @@ class TestQuickspikes(unittest.TestCase):
 
     def test_extract_spikes_nofilter(self):
         with self.assertRaises(ValueError):
-            x = peaks(a_recording_dbl, [t + t_peak for t in a_times], n_before=20, n_after=300)
+            peaks(a_recording_dbl, [t + t_peak for t in a_times], n_before=20, n_after=300)
 
     def test_extract_spikes_double(self):
         n_before = 20
@@ -77,6 +76,10 @@ class TestQuickspikes(unittest.TestCase):
         apeak = aligned.argmax(1)
         self.assertTrue((apeak == apeak[0]).all())
 
+    def test_detect_intrac_spikes_narrow(self):
+        det = detector(-20, 100)
+        self.assertSequenceEqual(det.send(c_recording), c_times)
+
 
 class TestTools(unittest.TestCase):
 
@@ -99,6 +102,12 @@ class TestTools(unittest.TestCase):
             trough = find_trough(spike[200:])
             self.assertEqual(trough, spike[200:].argmin())
 
+    def test_intrac_narrow_trough(self):
+        spikes = peaks(c_recording, c_times, 200, 400)
+        for spike in spikes:
+            trough = find_trough(spike[200:])
+            self.assertEqual(trough, spike[200:].argmin())
+
     def test_intrac_trough_no_min(self):
         spikes = peaks(b_recording, b_times[:1], 100, 100)
         for spike in spikes:
@@ -108,10 +117,17 @@ class TestTools(unittest.TestCase):
     def test_intrac_onset(self):
         # this case is based on manual inspection of the spike waveform
         spike = peaks(b_recording, b_times[:1], 200, 100)[0]
-        onset = find_onset(spike[:200], 10.0, 100, 20)
+        onset = find_onset(spike[:200], 10.0, 100, 13)
         self.assertAlmostEqual(onset, 176, delta=1)
 
     def test_intrac_no_onset(self):
         spike = peaks(b_recording, b_times[:1], 100, 100)[0]
-        onset = find_onset(spike[:100], 10.0, 80, 20)
+        onset = find_onset(spike[:100], 10.0, 80, 13)
         self.assertIsNone(onset)
+
+    def test_intrac_narrow_onset(self):
+        # this case is based on manual inspection of the spike waveform
+        spike = peaks(c_recording, c_times[:1], 200, 100)[0]
+        onset = find_onset(spike[:200], 10.0, 100, 13)
+        self.assertAlmostEqual(onset, 186, delta=1)
+

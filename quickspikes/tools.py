@@ -132,7 +132,7 @@ def trim(
 
 
 def find_onset(
-    spk: np.ndarray, dV_thresh: float = 10.0, n_baseline: int = 100, min_rise: int = 20
+    spk: np.ndarray, dV_thresh: float = 10.0, n_baseline: int = 100, min_rise: int = 13
 ) -> int:
     """Returns the index of the takeoff point for a spike.
 
@@ -141,9 +141,9 @@ def find_onset(
     `n_baseline` samples of `spk`) for at least `min_rise` samples.
 
     The default values work well for an intracellular spike recorded at 50 kHz
-    with a clearly defined onset and a width 1-2 ms. If the spikes are too close
-    together, it may be difficult to establish a good baseline for calculating
-    the threshold.
+    with a clearly defined onset and a width 1-2 ms. If the spikes are narrower,
+    min_rise should be reduced. If the spikes are too close together, it may be
+    difficult to establish a good baseline for calculating the threshold.
 
     Returns None if the derivative never drops below the threshold or if
     the crossing occurs in the baseline period.

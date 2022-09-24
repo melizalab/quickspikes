@@ -5,7 +5,8 @@ import unittest
 import numpy as np
 
 from quickspikes.spikes import detector, peaks, find_run
-from quickspikes.tools import filter_times, realign_spikes, find_trough, find_onset, trim
+from quickspikes.tools import filter_times, realign_spikes, find_trough, find_onset, trim_waveforms
+from quickspikes.intracellular import SpikeFinder
 
 # a nice surrogate spike with 20 samples before peak and 40 after
 a_spike = np.array([-1290,  -483,  -136,  -148,  -186,   637,   328,    41,    63,
@@ -28,9 +29,11 @@ b_recording = np.load("test/intra_spike.npy")
 b_times = [7635, 8412, 9363, 10424, 11447, 12661, 13887, 15079, 16373,
            17753, 19168, 20682, 22357, 23979, 25574, 27209, 28989,
            30508, 32088, 33778]
+b_takeoff = 24
+
 c_recording = np.load("test/intra_spike_narrow.npy")
 c_times = [8325, 8816, 9368, 9985, 10619, 11276, 11968, 12610, 13240, 13900, 14485, 15193, 15840, 16601]
-
+c_takeoff = 14
 
 class TestQuickspikes(unittest.TestCase):
 
@@ -88,8 +91,8 @@ class TestTools(unittest.TestCase):
         # trimming
         det = detector(-20, 100)
         spikes = peaks(c_recording, c_times, 200, 700)
-        for spike in trim(spikes, c_times, 200, 100):
-            t = det(spike.astype("d"))
+        for _, spike_w in trim_waveforms(spikes, c_times, 200, 100):
+            t = det(spike_w.astype("d"))
             self.assertEqual(len(t), 1)
             self.assertSequenceEqual(t, [200])
 
@@ -128,7 +131,7 @@ class TestTools(unittest.TestCase):
         # this case is based on manual inspection of the spike waveform
         spike = peaks(b_recording, b_times[:1], 200, 100)[0]
         onset = find_onset(spike[:200], 10.0, 100, 13)
-        self.assertAlmostEqual(onset, 176, delta=1)
+        self.assertEqual(onset, 200 - b_takeoff)
 
     def test_intrac_no_onset(self):
         spike = peaks(b_recording, b_times[:1], 100, 100)[0]
@@ -139,5 +142,15 @@ class TestTools(unittest.TestCase):
         # this case is based on manual inspection of the spike waveform
         spike = peaks(c_recording, c_times[:1], 200, 100)[0]
         onset = find_onset(spike[:200], 10.0, 100, 13)
-        self.assertAlmostEqual(onset, 186, delta=1)
+        self.assertEqual(onset, 200 - c_takeoff)
 
+
+class TestDynamicExtractor(unittest.TestCase):
+
+    def test_intrac_broad(self):
+        detector = SpikeFinder(50, 350, 5000)
+        thresh, base, takeoff = detector.calculate_threshold(b_recording)
+        self.assertEqual(takeoff, b_takeoff)
+        times = [time for time, spike in detector.extract_spikes(b_recording, 10)]
+        self.assertSequenceEqual(times, b_times)
+            

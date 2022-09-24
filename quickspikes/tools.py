@@ -95,9 +95,9 @@ def fftresample(S: np.ndarray, npoints: int, reflect: bool = False) -> np.ndarra
         return Srs
 
 
-def trim(
-    spikes: Iterable[np.ndarray], times: Iterable[numeric], peak_t: int, n_rise: int
-) -> Iterator[np.ndarray]:
+def trim_waveforms(
+    spikes: Iterable[np.ndarray], times: Iterable[int], peak_t: int, n_rise: int
+) -> Iterator[Tuple[int, np.ndarray]]:
     """Trims spike waveforms to remove overlapping peaks.
 
     The peaks() function is used to extract waveforms in a window surrounding
@@ -124,11 +124,11 @@ def trim(
             # s[peak_t:].argmin() + peak_t,
             s.size,
         )
-        yield s[:i_last]
+        yield t, s[:i_last]
     # the last spike
     s = spikes[-1]
     # i_last = min(s[peak_t:].argmin() + peak_t, s.size)
-    yield s[: s.size]
+    yield times[-1], s[: s.size]
 
 
 def find_onset(

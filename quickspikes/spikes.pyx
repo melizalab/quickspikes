@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # -*- mode: cython -*-
+# cython: language_level=3
 """spike detection routines
 
 Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Wed Jul 24 09:26:36 2013
 """
-import numpy as np
 from cython cimport view, boundscheck
+import numpy as np
 
 ctypedef fused sample_t:
     short
@@ -37,11 +38,11 @@ cdef class detector:
         double thresh
         double scaled_thresh
         double prev_val
-        int n_after
-        int n_after_crossing
+        size_t n_after
+        size_t n_after_crossing
         DetectorState state
 
-    def __init__(self, double thresh, int n_after):
+    def __init__(self, double thresh, size_t n_after):
         """Construct spike detector.
 
         Parameters
@@ -49,7 +50,7 @@ cdef class detector:
         thresh : double
           The crossing threshold that triggers the detector. NB: to detect
           negative-going peaks, invert the signal sent to send()
-        n_after : int
+        n_after : size_t
           The maximum number of samples after threshold crossing to look for the
           peak. If a peak has not been located within this window, the crossing
           is considered an artifact and is not counted.
@@ -76,7 +77,7 @@ cdef class detector:
 
         """
         cdef double x
-        cdef int i = 0
+        cdef size_t i = 0
         out = []
 
         for i in range(samples.shape[0]):
@@ -116,7 +117,7 @@ cdef class detector:
 
 
 @boundscheck(False)
-def peaks(sample_t[:] samples, times, int n_before=75, int n_after=400):
+def peaks(sample_t[:] samples, times, size_t n_before=75, size_t n_after=400):
     """Extracts samples around times
 
     Returns a 2D array with len(times) rows and (n_before + n_after) columns
@@ -153,8 +154,26 @@ def peaks(sample_t[:] samples, times, int n_before=75, int n_after=400):
     return out
 
 
+def find_run(sample_t[:] values, sample_t thresh, size_t min_run):
+    """ Return the index of the first element in values that starts a run of at
+    least min_run in length, or None if no such run exists. """
+    cdef size_t i
+    cdef size_t run_start = -1
+    cdef bint in_run = False
+    for i in range(values.size):
+        if values[i] > thresh:
+            if not in_run:
+                in_run = True
+                run_start = i
+            elif i - run_start == min_run:
+                return run_start
+        else:
+            in_run = False
+    return None
+
+
 def subthreshold(double[:] samples, times,
-                 double v_thresh=-50, double dv_thresh=0, int min_size=10):
+                 double v_thresh=-50, double dv_thresh=0, size_t min_size=10):
     """Removes spikes from time series
 
     Spikes are removed from the voltage trace by beginning at each peak and
@@ -172,12 +191,12 @@ def subthreshold(double[:] samples, times,
     Returns a copy of samples with the data points around spike times set to NaN
 
     """
-    cdef int i, j, spikestart, spikestop
-    cdef int nsamples = samples.size
+    cdef size_t i, j, spikestart, spikestop
+    cdef size_t nsamples = samples.size
     cdef double[:] out = samples.copy()
     for i in times:
         if samples[i] < v_thresh:
-            print "spike peak at %d is below threshold; skipping"
+            #print "spike peak at %d is below threshold; skipping"
             continue
         # iterate back and blank out samples before v or dv cross threshold
         j = 0

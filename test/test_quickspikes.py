@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 import unittest
-from distutils import version
 
-import sys
 import numpy as np
 
-if sys.hexversion < 0x03000000:
-    FileNotFoundError = IOError
+from quickspikes.spikes import detector, peaks, find_run
+from quickspikes.tools import filter_times, realign_spikes, find_trough
 
 # a nice surrogate spike with 20 samples before peak and 40 after
 a_spike = np.array([-1290,  -483,  -136,  -148,  -186,   637,   328,    41,    63,
@@ -34,25 +32,20 @@ b_times = [7635, 8412, 9363, 10424, 11447, 12661, 13887, 15079, 16373,
            17753, 19168, 20682, 22357, 23979, 25574, 27209, 28989,
            30508, 32088, 33778]
 
+
 class TestQuickspikes(unittest.TestCase):
 
     def test_detect_extrac_spikes(self):
-        from quickspikes.spikes import detector
         det = detector(2000, 40)
-
         self.assertSequenceEqual(det.send(a_recording_dbl), [t + t_peak for t in a_times])
         self.assertSequenceEqual(det.send(-a_recording_dbl), [t + t_trough for t in a_times])
         self.assertSequenceEqual(det(a_recording_dbl), [t + t_peak for t in a_times])
 
-
     def test_extract_spikes_nofilter(self):
-        from quickspikes.spikes import peaks
         with self.assertRaises(ValueError):
             x = peaks(a_recording_dbl, [t + t_peak for t in a_times], n_before=20, n_after=300)
 
     def test_extract_spikes_double(self):
-        from quickspikes import peaks, filter_times
-
         n_before = 20
         n_after = 300
         times = filter_times([t + t_peak for t in a_times], n_before, a_recording_dbl.size - n_after)
@@ -63,7 +56,6 @@ class TestQuickspikes(unittest.TestCase):
         self.assertTrue(np.all(a_spike == x[0,:a_spike.size]))
 
     def test_extract_spikes_integer(self):
-        from quickspikes import peaks, filter_times
         n_before = 20
         n_after = 300
         times = filter_times([t + t_peak for t in a_times], n_before, a_recording_int.size - n_after)
@@ -74,19 +66,41 @@ class TestQuickspikes(unittest.TestCase):
         self.assertTrue(np.all(a_spike == x[0,:a_spike.size]))
 
     def test_detect_intrac_spikes(self):
-        from quickspikes.spikes import detector
-
         det = detector(0, 100)
         self.assertSequenceEqual(det.send(b_recording), b_times)
-
         det = detector(-20, 100)
         self.assertSequenceEqual(det.send(b_recording), b_times)
 
     def test_align_spikes(self):
-        from quickspikes.spikes import peaks
-        from quickspikes.tools import realign_spikes
-
         spikes = peaks(b_recording, b_times, 200, 400)
         times, aligned = realign_spikes(b_times, spikes, 3, 4)
-        peaks = aligned.argmax(1)
-        self.assertTrue((peaks == peaks[0]).all())
+        apeak = aligned.argmax(1)
+        self.assertTrue((apeak == apeak[0]).all())
+
+
+class TestTools(unittest.TestCase):
+
+    def test_run(self):
+        a = np.arange(-10, 10)
+        self.assertEqual(find_run(a, 0, 5), 11)
+
+    def test_no_run(self):
+        a = np.zeros(20)
+        a[10:14] = 1
+        self.assertEqual(find_run(a, 0, 5), None)
+
+    def test_extrac_trough(self):
+        trough = find_trough(a_spike[t_peak:])
+        self.assertEqual(t_peak + trough, t_trough)
+
+    def test_intrac_trough(self):
+        spikes = peaks(b_recording, b_times, 200, 400)
+        for spike in spikes:
+            trough = find_trough(spike[200:])
+            self.assertEqual(trough, spike[200:].argmin())
+
+    def test_intrac_trough_no_min(self):
+        spikes = peaks(b_recording, b_times[:1], 100, 100)
+        for spike in spikes:
+            trough = find_trough(spike[100:])
+            self.assertEqual(trough, spike[100:].argmin())

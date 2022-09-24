@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 
 from quickspikes.spikes import detector, peaks, find_run
-from quickspikes.tools import filter_times, realign_spikes, find_trough, find_onset
+from quickspikes.tools import filter_times, realign_spikes, find_trough, find_onset, trim
 
 # a nice surrogate spike with 20 samples before peak and 40 after
 a_spike = np.array([-1290,  -483,  -136,  -148,  -186,   637,   328,    41,    63,
@@ -82,6 +82,16 @@ class TestQuickspikes(unittest.TestCase):
 
 
 class TestTools(unittest.TestCase):
+
+    def test_trim(self):
+        # empirical test: windows should have no more than one peak after
+        # trimming
+        det = detector(-20, 100)
+        spikes = peaks(c_recording, c_times, 200, 700)
+        for spike in trim(spikes, c_times, 200, 100):
+            t = det(spike.astype("d"))
+            self.assertEqual(len(t), 1)
+            self.assertSequenceEqual(t, [200])
 
     def test_run(self):
         a = np.arange(-10, 10)

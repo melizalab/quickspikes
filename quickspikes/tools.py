@@ -96,7 +96,7 @@ def fftresample(S: np.ndarray, npoints: int, reflect: bool = False) -> np.ndarra
 
 
 def trim(
-    times: Iterable[numeric], spikes: Iterable[np.ndarray], peak_t: int, n_rise: int
+    spikes: Iterable[np.ndarray], times: Iterable[numeric], peak_t: int, n_rise: int
 ) -> Iterator[np.ndarray]:
     """Trims spike waveforms to remove overlapping peaks.
 

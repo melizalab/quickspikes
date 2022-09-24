@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 
 from quickspikes.spikes import detector, peaks, find_run
-from quickspikes.tools import filter_times, realign_spikes, find_trough
+from quickspikes.tools import filter_times, realign_spikes, find_trough, find_onset
 
 # a nice surrogate spike with 20 samples before peak and 40 after
 a_spike = np.array([-1290,  -483,  -136,  -148,  -186,   637,   328,    41,    63,
@@ -104,3 +104,14 @@ class TestTools(unittest.TestCase):
         for spike in spikes:
             trough = find_trough(spike[100:])
             self.assertEqual(trough, spike[100:].argmin())
+
+    def test_intrac_onset(self):
+        # this case is based on manual inspection of the spike waveform
+        spike = peaks(b_recording, b_times[:1], 200, 100)[0]
+        onset = find_onset(spike[:200], 10.0, 100, 20)
+        self.assertAlmostEqual(onset, 176, delta=1)
+
+    def test_intrac_no_onset(self):
+        spike = peaks(b_recording, b_times[:1], 100, 100)[0]
+        onset = find_onset(spike[:100], 10.0, 80, 20)
+        self.assertIsNone(onset)

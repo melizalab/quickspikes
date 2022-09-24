@@ -131,32 +131,36 @@ def trim(
     yield s[: s.size]
 
 
-def find_onset(spk: np.ndarray, dV_thresh: float=10.0, n_baseline: int=100, min_rise: int=20) -> int:
-    """Returns the index of the takeoff point for a spike, relative to the peak time.
+def find_onset(
+    spk: np.ndarray, dV_thresh: float = 10.0, n_baseline: int = 100, min_rise: int = 20
+) -> int:
+    """Returns the index of the takeoff point for a spike.
 
-    The takeoff point is defined as the time when the derivative of `spk` exceeds some
-    `dV_thresh` standard deviations over a baseline period (the first `n_baseline`
-    samples of `spk`) for at least `min_rise` samples.
+    The takeoff point is defined as the time when the derivative of `spk`
+    exceeds `dV_thresh` standard deviations over a baseline period (the first
+    `n_baseline` samples of `spk`) for at least `min_rise` samples.
 
-    The default values work well for an intracellular spike of width 1-2 ms
-    recorded at 50 kHz. If the spikes are too close together, it may be
-    difficult to establish a good baseline for calculating the threshold.
-    
-    Raises a ValueError if the derivative never drops below the threshold or if the crossing occurs in 
+    The default values work well for an intracellular spike recorded at 50 kHz
+    with a clearly defined onset and a width 1-2 ms. If the spikes are too close
+    together, it may be difficult to establish a good baseline for calculating
+    the threshold.
+
+    Returns None if the derivative never drops below the threshold or if
+    the crossing occurs in the baseline period.
 
     """
-    from quickspikes.spikes import find_run
     dV = np.gradient(spk)
     mdV = dV[:n_baseline].mean()
     sdV = dV[:n_baseline].std()
     thresh = mdV + dV_thresh * sdV
-    dV0 = find_run(dV[::-1], thresh, min_rise)
-    n, p, v = rle(dV > thresh)
+    n, p, v = _rle(dV > thresh)
     pp = p[(n >= min_rise) & v]
-    ind = pp[-1]  # will raise IndexError if no hits
-    if ind < n_baseline:
-        raise IndexError("onset occurred in baseline - need more data")
-    return spk.size - ind
+    try:
+        ind = pp[-1]
+        if ind >= n_baseline:
+            return ind
+    except IndexError:
+        pass
 
 
 def find_trough(spk: np.ndarray, min_rise: int = 5) -> int:
@@ -172,3 +176,19 @@ def find_trough(spk: np.ndarray, min_rise: int = 5) -> int:
 
     dV0 = find_run(np.gradient(spk), 0, min_rise) or spk.size
     return spk[:dV0].argmin()
+
+
+def _rle(arr: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Run length encoding of arr. Returns (runlengths, startpositions, values)"""
+    # from stackoverflow 1066758
+    n = len(arr)
+    if n == 0:
+        return (None, None, None)
+    else:
+        y = np.array(arr[1:] != arr[:-1])    # pairwise unequal (string safe)
+        i = np.append(np.where(y), n - 1)    # must include last element posi
+        z = np.diff(np.append(-1, i))        # run lengths
+        p = np.cumsum(np.append(0, z))[:-1]  # positions
+        return (z, p, arr[i])
+
+

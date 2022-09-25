@@ -74,14 +74,16 @@ class SpikeFinder:
         return (self.spike_thresh, spike_base, spike_takeoff)
 
     def extract_spikes(
-        self, V: np.ndarray, min_amplitude: float, upsample: int = 2
+        self, V: np.ndarray, min_amplitude: float, upsample: int = 2, jitter: int = 4
     ) -> Iterator[Tuple[int, np.ndarray]]:
         """Detect and extract spikes from V.
 
-        Yields (t, spike) for every detected spike that is at least `min_amplitude`
-        above the threshhold. Spike waveforms are upsampled, realigned, and then
-        trimmed so that there's no overlap with subsequent spikes.
+        V: input signal
+        min_amplitude: only yield spikes that are at least this much above threshold
+        upsample: the upsampling factor to use in realigning spikes
+        jitter: the expected jitter in peak position
 
+        Yields (t, spike)
         """
         from quickspikes import detector, peaks
         from quickspikes.tools import trim_waveforms, filter_times, realign_spikes

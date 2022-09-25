@@ -154,11 +154,13 @@ class TestDynamicExtractor(unittest.TestCase):
 
     def test_intrac_broad(self):
         detector = SpikeFinder(50, 350, 5000)
-        peak, thresh, base, takeoff = detector.calculate_threshold(b_recording)
+        peak, thresh, takeoff, base = detector.calculate_threshold(b_recording)
         self.assertEqual(takeoff, b_takeoff)
-        for i, (time, spike) in enumerate(detector.extract_spikes(b_recording, 10, upsample=2, jitter=4)):
+        for i, (time, spike) in enumerate(
+                detector.extract_spikes(b_recording, 10, upsample=2, jitter=4)
+        ):
             self.assertAlmostEqual(time, b_times[i], delta=4)
-            
+
     def test_intrac_narrow(self):
         detector = SpikeFinder(50, 350, 5000)
         peak, thresh, takeoff, base = detector.calculate_threshold(c_recording)

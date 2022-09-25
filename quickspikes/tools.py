@@ -5,7 +5,7 @@
 Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Fri Jul 12 14:05:16 2013
 """
-from typing import Iterable, Union, Tuple, Optional, Iterator
+from typing import Iterable, Union, Tuple, Optional, Iterator, Mapping
 import numpy as np
 
 numeric = Union[int, float, np.number]
@@ -133,51 +133,86 @@ def trim_waveforms(
     yield times[-1], s[: s.size]
 
 
-def find_onset(
-    spk: np.ndarray, dV_thresh: float = 10.0, n_baseline: int = 100, min_rise: int = 13
-) -> int:
-    """Returns the index of the takeoff point for a spike.
+def spike_shape(
+    spike: np.ndarray,
+    dt: float,
+    deriv_thresh: float = 10.0,
+    t_baseline: float = 2.0,
+    min_rise: float = 0.25,
+) -> Mapping[str, float]:
+    """Computes spike shape features:
 
-    The takeoff point is defined as the time when the derivative of `spk`
-    exceeds `dV_thresh` standard deviations over a baseline period (the first
-    `n_baseline` samples of `spk`) for at least `min_rise` samples.
+    takeoff: the voltage/time when the derivative of the waveform exceeds
+            `deriv_thresh` standard deviations over a baseline period (
+            `t_baseline`) for at least `min_rise` ms.
+
+    trough: The minimum value between the spike peak and the first sample where
+            the derivative becomes greater than zero for at least `min_rise`
+            ms. If the derivative never crosses this threshold, then it
+            this is the global minimum after the peak.
+
+    half_rise: the half-way point between the takeoff and the peak on the rising phase
+    half_decay: the halfway point between the peak and the takeoff on the decay phase
+    max_deriv: the maximum dV/dt on the rising phase
+    min_deriv: the minimum dV/dt on the falling phase
 
     The default values work well for an intracellular spike recorded at 50 kHz
     with a clearly defined onset and a width 1-2 ms. If the spikes are narrower,
     min_rise should be reduced. If the spikes are too close together, it may be
     difficult to establish a good baseline for calculating the threshold.
 
-    Returns None if the derivative never drops below the threshold or if
-    the crossing occurs in the baseline period.
-
-    """
-    dV = np.gradient(spk)
-    mdV = dV[:n_baseline].mean()
-    sdV = dV[:n_baseline].std()
-    thresh = mdV + dV_thresh * sdV
-    n, p, v = _rle(dV > thresh)
-    pp = p[(n >= min_rise) & v]
-    try:
-        ind = pp[-1]
-        if ind >= n_baseline:
-            return ind
-    except IndexError:
-        pass
-
-
-def find_trough(spk: np.ndarray, min_rise: int = 5) -> int:
-    """Find the local minimum after spike peak.
-
-    This function returns the index of the minimum value between the start of
-    `spk` and the first sample where the derivative becomes greater than zero
-    for at least `min_rise` samples. If the derivative never crosses this
-    threshold, then it returns the argmin of `spk`
+    All features are returned as both a time and a value. If no takeoff point
+    can be found, then half_rise and half_decay are undefined.
 
     """
     from quickspikes.spikes import find_run
 
-    dV0 = find_run(np.gradient(spk), 0, min_rise) or spk.size
-    return spk[:dV0].argmin()
+    n_baseline = int(t_baseline / dt)
+    min_rise = int(min_rise / dt)
+    peak_ind = spike.argmax()
+    peak_v = spike[peak_ind]
+    deriv = np.gradient(spike, dt)
+    # trough
+    dV0_ind = find_run(deriv[peak_ind:], 0, min_rise) or spike.size
+    trough_ind = spike[peak_ind : peak_ind + dV0_ind].argmin()
+    # min and max dV/dt
+    dVmax_ind = deriv[:peak_ind].argmax()
+    dVmin_ind = deriv[peak_ind:].argmin()
+
+    # takeoff
+    mdV = deriv[:n_baseline].mean()
+    sdV = deriv[:n_baseline].std()
+    thresh = mdV + deriv_thresh * sdV
+    n, p, v = _rle(deriv[:peak_ind] > thresh)
+    pp = p[(n >= min_rise) & v]
+    try:
+        takeoff_ind = pp[-1]
+    except IndexError:
+        takeoff_t = takeoff_v = half_rise_t = half_decay_t = None
+    else:
+        takeoff_v = spike[takeoff_ind]
+        takeoff_t = (peak_ind - takeoff_ind) * dt
+        half_ampl = (peak_v + takeoff_v) / 2
+        half_rise_ind = find_run(spike[:peak_ind], half_ampl, 1) or 0
+        half_rise_t = (peak_ind - half_rise_ind) * dt
+        half_decay_ind = (
+            find_run(-spike[peak_ind:], -half_ampl, 2) or spike.size - peak_ind
+        )
+        half_decay_t = (half_decay_ind - peak_ind) * dt
+    return dict(
+        peak_t=peak_ind * dt,
+        peak=peak_v,
+        takeoff_t=takeoff_t,
+        takeoff=takeoff_v,
+        trough_t=trough_ind * dt,
+        trough=spike[peak_ind + trough_ind],
+        half_rise_t=half_rise_t,
+        half_decay_t=half_decay_t,
+        max_dV=deriv[dVmax_ind],
+        max_dV_t=(peak_ind - dVmax_ind) * dt,
+        min_dV=deriv[dVmin_ind + peak_ind],
+        min_dV_t=dVmin_ind * dt,
+    )
 
 
 def _rle(arr: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -187,10 +222,8 @@ def _rle(arr: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     if n == 0:
         return (None, None, None)
     else:
-        y = np.array(arr[1:] != arr[:-1])    # pairwise unequal (string safe)
-        i = np.append(np.where(y), n - 1)    # must include last element posi
-        z = np.diff(np.append(-1, i))        # run lengths
+        y = np.array(arr[1:] != arr[:-1])  # pairwise unequal (string safe)
+        i = np.append(np.where(y), n - 1)  # must include last element posi
+        z = np.diff(np.append(-1, i))  # run lengths
         p = np.cumsum(np.append(0, z))[:-1]  # positions
         return (z, p, arr[i])
-
-

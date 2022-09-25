@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 
 from quickspikes.spikes import detector, peaks, find_run
-from quickspikes.tools import filter_times, realign_spikes, find_trough, find_onset, trim_waveforms
+from quickspikes.tools import filter_times, realign_spikes, spike_shape, trim_waveforms
 from quickspikes.intracellular import SpikeFinder
 
 # a nice surrogate spike with 20 samples before peak and 40 after
@@ -34,6 +34,7 @@ b_takeoff = 24
 c_recording = np.load("test/intra_spike_narrow.npy")
 c_times = [8325, 8816, 9368, 9985, 10619, 11276, 11968, 12610, 13240, 13900, 14485, 15193, 15840, 16601]
 c_takeoff = 14
+
 
 class TestQuickspikes(unittest.TestCase):
 
@@ -110,44 +111,48 @@ class TestTools(unittest.TestCase):
         a[10:14] = 1
         self.assertEqual(find_run(a, 0, 5), None)
 
-    def test_extrac_trough(self):
-        trough = find_trough(a_spike[t_peak:])
-        self.assertEqual(t_peak + trough, t_trough)
+    def test_extrac_shape(self):
+        shape = spike_shape(a_spike, 1)
+        self.assertEqual(shape["peak_t"], t_peak)
+        self.assertEqual(t_peak + shape["trough_t"], t_trough)
 
     def test_intrac_trough(self):
         spikes = peaks(b_recording, b_times, 200, 400)
-        for spike in spikes:
-            trough = find_trough(spike[200:])
-            self.assertEqual(trough, spike[200:].argmin())
+        for i, spike in enumerate(spikes):
+            shape = spike_shape(spike, dt=1, t_baseline=100, min_rise=13)
+            peak = shape["peak_t"]
+            self.assertEqual(shape["trough_t"], spike[peak:].argmin())
 
     def test_intrac_narrow_trough(self):
         spikes = peaks(c_recording, c_times, 200, 400)
         for spike in spikes:
-            trough = find_trough(spike[200:])
-            self.assertEqual(trough, spike[200:].argmin())
+            shape = spike_shape(spike, dt=1, t_baseline=100, min_rise=13)
+            peak = shape["peak_t"]
+            self.assertEqual(shape["trough_t"], spike[peak:].argmin())
 
     def test_intrac_trough_no_min(self):
         spikes = peaks(b_recording, b_times[:1], 100, 100)
         for spike in spikes:
-            trough = find_trough(spike[100:])
-            self.assertEqual(trough, spike[100:].argmin())
+            shape = spike_shape(spike, dt=1, t_baseline=100, min_rise=13)
+            peak = shape["peak_t"]
+            self.assertEqual(shape["trough_t"], spike[peak:].argmin())
 
     def test_intrac_onset(self):
         # this case is based on manual inspection of the spike waveform
         spike = peaks(b_recording, b_times[:1], 200, 100)[0]
-        onset = find_onset(spike[:200], 10.0, 100, 13)
-        self.assertEqual(onset, 200 - b_takeoff)
+        shape = spike_shape(spike, dt=1, t_baseline=100, min_rise=13)
+        self.assertEqual(shape["takeoff_t"], b_takeoff)
 
     def test_intrac_no_onset(self):
         spike = peaks(b_recording, b_times[:1], 100, 100)[0]
-        onset = find_onset(spike[:100], 10.0, 80, 13)
-        self.assertIsNone(onset)
+        shape = spike_shape(spike, dt=1, t_baseline=80, min_rise=13)
+        self.assertIsNone(shape["takeoff_t"])
 
     def test_intrac_narrow_onset(self):
         # this case is based on manual inspection of the spike waveform
         spike = peaks(c_recording, c_times[:1], 200, 100)[0]
-        onset = find_onset(spike[:200], 10.0, 100, 13)
-        self.assertEqual(onset, 200 - c_takeoff)
+        shape = spike_shape(spike, dt=1, t_baseline=100, min_rise=13)
+        self.assertEqual(shape["takeoff_t"], c_takeoff)
 
 
 class TestDynamicExtractor(unittest.TestCase):

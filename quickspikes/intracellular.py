@@ -32,7 +32,7 @@ class SpikeFinder:
         V: np.ndarray,
         thresh_rel: float = 0.35,
         thresh_min: float = -50,
-        dV_thresh: float = 10.0,
+        deriv_thresh: float = 10.0,
     ) -> Optional[Tuple[float, float, float]]:
         """Calculate the detection threshold from the amplitude of the first spike in V.
 
@@ -42,28 +42,27 @@ class SpikeFinder:
         threshold voltage, takeoff_index [relative to spike peak], takeoff voltage) is returned.
 
         """
-        from quickspikes.tools import find_onset
+        from quickspikes.tools import spike_shape
 
         self.spike_thresh = self.first_spike_amplitude = None
         first_peak_idx = V.argmax()
-        first_spike = V[first_peak_idx - self.n_before : first_peak_idx]
-        first_spike_peak = V[first_peak_idx]
-        first_spike_onset = find_onset(
+        first_spike = V[first_peak_idx - self.n_before : first_peak_idx + self.n_after]
+        shape = spike_shape(
             first_spike,
-            dV_thresh=dV_thresh,
-            n_baseline=self.n_before // 2,
+            dt=1,
+            deriv_thresh=deriv_thresh,
+            t_baseline=self.n_before // 2,
             min_rise=self.n_rise // 4,
         )
-        if first_spike_onset is None:
+        if shape["takeoff_t"] is None:
             return
-        spike_base = first_spike[first_spike_onset]
-        spike_takeoff = first_spike.size - first_spike_onset
-        first_spike_amplitude = first_spike_peak - spike_base
+        spike_base = shape["takeoff"]
+        first_spike_amplitude = shape["peak"] - spike_base
         self.spike_thresh = max(
             spike_base + thresh_rel * first_spike_amplitude,
             thresh_min,
         )
-        return (first_peak_idx, self.spike_thresh, spike_takeoff, spike_base)
+        return (first_peak_idx, self.spike_thresh, shape["takeoff_t"], shape["takeoff"])
 
     def extract_spikes(
         self, V: np.ndarray, min_amplitude: float, upsample: int = 2, jitter: int = 4

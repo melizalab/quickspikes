@@ -154,18 +154,18 @@ def peaks(sample_t[:] samples, times, size_t n_before=75, size_t n_after=400):
     return out
 
 
-def find_run(sample_t[:] values, sample_t thresh, size_t min_run):
+def find_run(sample_t[:] values, sample_t thresh, long min_run):
     """ Return the index of the first element in values that starts a run of at
     least min_run in length, or None if no such run exists. """
-    cdef int i
-    cdef int run_start = -1
+    cdef long i
+    cdef long run_start = 0
     cdef bint in_run = False
     for i in range(values.size):
         if values[i] > thresh:
             if not in_run:
                 in_run = True
                 run_start = i
-            elif i - run_start == min_run:
+            if i - run_start >= min_run:
                 return run_start
         else:
             in_run = False

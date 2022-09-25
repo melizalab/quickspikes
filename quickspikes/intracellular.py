@@ -38,8 +38,8 @@ class SpikeFinder:
 
         If no spike can be detected in the signal, returns None. Otherwise, the
         instance's threshold is set at `thresh_rel` times the amplitude of the
-        first spike, or `thresh_min` (whichever is greater), and (threshold,
-        takeoff voltage, takeoff time) is returned.
+        first spike, or `thresh_min` (whichever is greater), and (peak_index,
+        threshold voltage, takeoff_index [relative to spike peak], takeoff voltage) is returned.
 
         """
         from quickspikes.tools import find_onset
@@ -55,23 +55,15 @@ class SpikeFinder:
             min_rise=self.n_rise // 4,
         )
         if first_spike_onset is None:
-            log.debug("  ✗ no spikes")
             return
         spike_base = first_spike[first_spike_onset]
         spike_takeoff = first_spike.size - first_spike_onset
         first_spike_amplitude = first_spike_peak - spike_base
-        log.debug(
-            "  - first spike: time=%d, peak=%.1f mV, base=%.1f mV, takeoff=-%d",
-            first_peak_idx,
-            first_spike_peak,
-            spike_base,
-            spike_takeoff,
-        )
         self.spike_thresh = max(
             spike_base + thresh_rel * first_spike_amplitude,
             thresh_min,
         )
-        return (self.spike_thresh, spike_base, spike_takeoff)
+        return (first_peak_idx, self.spike_thresh, spike_takeoff, spike_base)
 
     def extract_spikes(
         self, V: np.ndarray, min_amplitude: float, upsample: int = 2, jitter: int = 4

@@ -45,6 +45,8 @@ def realign_spikes(
     # first infer the expected peak time
     if expected_peak is None:
         expected_peak = np.mean(spikes, 0).argmax() * upsample
+    else:
+        expected_peak *= upsample
     spikes = fftresample(spikes, int(nsamples * upsample), reflect=reflect_fft)
     # find peaks within upsample samples of mean peak
     shift = find_peaks(spikes, expected_peak, upsample * jitter)
@@ -53,7 +55,7 @@ def realign_spikes(
     shifted = np.zeros((nevents, nshifted))
     for i, spike in enumerate(spikes):
         shifted[i, :] = spike[start[i] : start[i] + nshifted]
-    return (np.asarray(times) * upsample + start, shifted)
+    return (np.asarray(times) * upsample + shift, shifted)
 
 
 def find_peaks(spikes: np.ndarray, peak: int, window: int) -> np.ndarray:

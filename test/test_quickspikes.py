@@ -74,10 +74,15 @@ class TestQuickspikes(unittest.TestCase):
         self.assertSequenceEqual(det.send(b_recording), b_times)
 
     def test_align_spikes(self):
+        jitter = 4
         spikes = peaks(b_recording, b_times, 200, 400)
-        times, aligned = realign_spikes(b_times, spikes, 3, 4)
+        times, aligned = realign_spikes(b_times, spikes, 3, jitter)
         apeak = aligned.argmax(1)
         self.assertTrue((apeak == apeak[0]).all())
+        # times should have shifted no more than jitter
+        self.assertEqual(len(b_times), times.size)
+        for t1, t2 in zip(b_times, times):
+            self.assertAlmostEqual(t1, t2 // 3, delta=jitter)
 
     def test_detect_intrac_spikes_narrow(self):
         det = detector(-20, 100)

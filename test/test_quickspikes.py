@@ -174,3 +174,11 @@ class TestDynamicExtractor(unittest.TestCase):
             detector.extract_spikes(c_recording, 10, upsample=2, jitter=4)
         ):
             self.assertAlmostEqual(time, c_times[i], delta=4)
+
+    def test_thresh_for_max_at_edge_of_signal(self):
+        """ calculate_threshold should ignore spikes that are too close to the edge of the signal """
+        detector = SpikeFinder(50, 350, 5000)
+        clip = b_times[0] - 300
+        _ = detector.calculate_threshold(b_recording[clip:])
+        peaks = detector.detect_spikes(b_recording[clip:])
+        self.assertEqual(peaks[0] + clip, b_times[1])

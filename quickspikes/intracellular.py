@@ -145,7 +145,7 @@ class SpikeFinder:
 
         """
         self.spike_thresh = self.first_spike_amplitude = None
-        first_peak_idx = V.argmax()
+        first_peak_idx = V[self.n_before:-self.n_after].argmax() + self.n_before
         first_spike = V[first_peak_idx - self.n_before : first_peak_idx + self.n_after]
         shape = spike_shape(
             first_spike,
@@ -164,6 +164,14 @@ class SpikeFinder:
         )
         return shape
 
+    def detect_spikes(self, V: np.ndarray) -> Iterator[int]:
+        """ Using the calculated threshold, detect spikes that are extractable """
+        from quickspikes import detector, filter_times
+        det = detector(self.spike_thresh, self.n_rise)
+        return filter_times(
+            det.send(V), self.n_before, V.size - self.n_after
+        )
+
     def extract_spikes(
         self, V: np.ndarray, min_amplitude: float, upsample: int = 2, jitter: int = 4
     ) -> Iterator[Tuple[int, np.ndarray]]:
@@ -176,13 +184,10 @@ class SpikeFinder:
 
         Yields (t, spike)
         """
-        from quickspikes import detector, peaks
-        from quickspikes.tools import trim_waveforms, filter_times, realign_spikes
+        from quickspikes import peaks
+        from quickspikes.tools import trim_waveforms, realign_spikes
 
-        detector = detector(self.spike_thresh, self.n_rise)
-        spike_times = filter_times(
-            detector.send(V), self.n_before, V.size - self.n_after
-        )
+        spike_times = self.detect_spikes(V)
         spikes = peaks(V, spike_times, self.n_before, self.n_after)
         spike_times, spikes = realign_spikes(
             spike_times,

@@ -111,6 +111,9 @@ class TestTools(unittest.TestCase):
         a[10:14] = 1
         self.assertEqual(find_run(a, 0, 5), None)
 
+
+class TestSpikeShape(unittest.TestCase):
+
     def test_extrac_shape(self):
         shape = spike_shape(a_spike, 1)
         self.assertEqual(shape.peak_t, t_peak)
@@ -153,6 +156,12 @@ class TestTools(unittest.TestCase):
         spike = peaks(c_recording, c_times[:1], 200, 100)[0]
         shape = spike_shape(spike, dt=1, t_baseline=100, min_rise=13)
         self.assertEqual(shape.takeoff_t, c_takeoff)
+
+    def test_bad_spike_peak_at_edge(self):
+        """ spike_shape returns None if max is at the edge of the waveform """
+        bad = np.arange(100, -100, -1)
+        self.assertIsNone(spike_shape(bad, dt=1, t_baseline=100, min_rise=13))
+        self.assertIsNone(spike_shape(bad[::-1], dt=1, t_baseline=100, min_rise=13))
 
 
 class TestDynamicExtractor(unittest.TestCase):

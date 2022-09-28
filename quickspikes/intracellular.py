@@ -33,7 +33,7 @@ def spike_shape(
     deriv_thresh: float = 10.0,
     t_baseline: float = 2.0,
     min_rise: float = 0.25,
-) -> Spike:
+) -> Optional[Spike]:
     """Computes spike shape features:
 
     takeoff: the voltage/time when the derivative of the waveform exceeds
@@ -56,7 +56,9 @@ def spike_shape(
     difficult to establish a good baseline for calculating the threshold.
 
     All features are returned as both a time and a value. If no takeoff point
-    can be found, then half_rise and half_decay are undefined.
+    can be found, then half_rise and half_decay are undefined. If the spike is
+    very badly formed (e.g. the peak is at the very beginning or end), then None
+    is returned.
 
     """
     from quickspikes.spikes import find_run
@@ -65,6 +67,8 @@ def spike_shape(
     n_baseline = int(t_baseline / dt)
     min_rise = int(min_rise / dt)
     peak_ind = spike.argmax()
+    if peak_ind in (0, spike.size - 1):
+        return None
     peak_v = spike[peak_ind]
     deriv = np.gradient(spike, dt)
     # trough

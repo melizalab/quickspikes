@@ -97,7 +97,7 @@ def spike_shape(
         half_decay_ind = (
             find_run(-spike[peak_ind:], -half_ampl, 2) or spike.size - peak_ind
         )
-        half_decay_t = (half_decay_ind - peak_ind) * dt
+        half_decay_t = half_decay_ind * dt
     return Spike(
         peak_t=peak_ind * dt,
         peak_V=peak_v,

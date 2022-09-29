@@ -184,6 +184,17 @@ class TestDynamicExtractor(unittest.TestCase):
         ):
             self.assertAlmostEqual(time, c_times[i], delta=4)
 
+    def test_no_spikes(self):
+        """ extract_spikes should yield nothing if there are no spikes detected """
+        # In some rare cases, there will be a single spike that passes the first spike
+        # threshold but is not detected due to the minimum height requirement
+        # (thresh_min).
+        detector = SpikeFinder(50, 350, 5000)
+        signal = np.random.randn(100000)
+        detector.spike_thresh = 50
+        times = [t for t, s in detector.extract_spikes(signal, 40)]
+        self.assertSequenceEqual(times, [])
+
     def test_thresh_for_max_at_edge_of_signal(self):
         """ calculate_threshold should ignore spikes that are too close to the edge of the signal """
         detector = SpikeFinder(50, 350, 5000)

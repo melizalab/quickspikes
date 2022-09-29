@@ -192,6 +192,8 @@ class SpikeFinder:
         from quickspikes.tools import trim_waveforms, realign_spikes
 
         spike_times = self.detect_spikes(V)
+        if len(spike_times) == 0:
+            return
         spikes = peaks(V, spike_times, self.n_before, self.n_after)
         spike_times, spikes = realign_spikes(
             spike_times,

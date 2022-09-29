@@ -220,14 +220,14 @@ class TestExponentialFit(unittest.TestCase):
             self.assertAlmostEqual(params["amplitude"][i], A1[i], delta=0.001)
             self.assertAlmostEqual(params["lifetime"][i], tau[i], delta=0.001)
 
-    def test_noisy_double_exponential(self):
-        A0 = -76
-        A1 = [-3.22, 6.36]
-        tau = [300, 61.0]
-        t = np.arange(0, 500, 0.02)
-        y = A0 + A1[0] * np.exp(-t/tau[0]) + A1[1] * np.exp(-t/tau[1]) + np.random.randn(t.size) * 0.05
-        params, err = fit_exponentials(y, 2, 20, 0.02, axis=0)
-        self.assertAlmostEqual(params["offset"], A0, delta=0.1)
-        for i in range(2):
-            self.assertAlmostEqual(params["amplitude"][i], A1[i], delta=abs(A1[i] * 0.02))
-            self.assertAlmostEqual(params["lifetime"][i], tau[i], delta=tau[i] * 0.02)
+    # def test_noisy_double_exponential(self):
+    #     A0 = -76
+    #     A1 = [-3.22, 6.36]
+    #     tau = [300, 61.0]
+    #     t = np.arange(0, 500, 0.02)
+    #     y = A0 + A1[0] * np.exp(-t/tau[0]) + A1[1] * np.exp(-t/tau[1]) + np.random.randn(t.size) * 0.05
+    #     params, err = fit_exponentials(y, 2, 20, 0.02, axis=0)
+    #     self.assertAlmostEqual(params["offset"], A0, delta=0.1)
+    #     for i in range(2):
+    #         self.assertAlmostEqual(params["amplitude"][i], A1[i], delta=abs(A1[i] * 0.02))
+    #         self.assertAlmostEqual(params["lifetime"][i], tau[i], delta=tau[i] * 0.02)

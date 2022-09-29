@@ -6,7 +6,7 @@ import numpy as np
 
 from quickspikes.spikes import detector, peaks, find_run
 from quickspikes.tools import filter_times, realign_spikes, trim_waveforms
-from quickspikes.intracellular import SpikeFinder, spike_shape
+from quickspikes.intracellular import SpikeFinder, spike_shape, fit_exponentials
 
 # a nice surrogate spike with 20 samples before peak and 40 after
 a_spike = np.array([-1290,  -483,  -136,  -148,  -186,   637,   328,    41,    63,
@@ -191,3 +191,43 @@ class TestDynamicExtractor(unittest.TestCase):
         _ = detector.calculate_threshold(b_recording[clip:])
         peaks = detector.detect_spikes(b_recording[clip:])
         self.assertEqual(peaks[0] + clip, b_times[1])
+
+
+class TestExponentialFit(unittest.TestCase):
+
+    def test_single_exponential(self):
+        A0 = -76
+        A1 = 6.36
+        tau = 61.0
+        t = np.arange(0, 500, 0.02)
+        y = A0 + A1 * np.exp(-t/tau)
+        params, err = fit_exponentials(y, 1, 20, 0.02, axis=0)
+        self.assertAlmostEqual(params["offset"], A0, delta=0.001)
+        self.assertAlmostEqual(params["amplitude"][0], A1, delta=0.001)
+        self.assertAlmostEqual(params["lifetime"][0], tau, delta=0.001)
+
+    def test_double_exponential(self):
+        A0 = -76
+        A1 = [-3.22, 6.36]
+        tau = [300, 61.0]
+        t = np.arange(0, 500, 0.02)
+        y = A0 + A1[0] * np.exp(-t/tau[0]) + A1[1] * np.exp(-t/tau[1])
+        params, err = fit_exponentials(y, 2, 20, 0.02, axis=0)
+        self.assertAlmostEqual(params["offset"], A0, delta=0.001)
+        # this test depends on the order that the coefficients are returned. Try
+        # sorting if this fails
+        for i in range(2):
+            self.assertAlmostEqual(params["amplitude"][i], A1[i], delta=0.001)
+            self.assertAlmostEqual(params["lifetime"][i], tau[i], delta=0.001)
+
+    def test_noisy_double_exponential(self):
+        A0 = -76
+        A1 = [-3.22, 6.36]
+        tau = [300, 61.0]
+        t = np.arange(0, 500, 0.02)
+        y = A0 + A1[0] * np.exp(-t/tau[0]) + A1[1] * np.exp(-t/tau[1]) + np.random.randn(t.size) * 0.05
+        params, err = fit_exponentials(y, 2, 20, 0.02, axis=0)
+        self.assertAlmostEqual(params["offset"], A0, delta=0.1)
+        for i in range(2):
+            self.assertAlmostEqual(params["amplitude"][i], A1[i], delta=abs(A1[i] * 0.02))
+            self.assertAlmostEqual(params["lifetime"][i], tau[i], delta=tau[i] * 0.02)

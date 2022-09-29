@@ -208,38 +208,3 @@ class SpikeFinder:
             if not np.any(spike - self.spike_thresh > min_amplitude):
                 continue
             yield (time // upsample, spike)
-
-
-def fit_exponentials(
-    data: np.ndarray, n_exps: int, n_coef: int = 6, dt: float = 1.0, axis: int = -1
-) -> Tuple[Mapping[str, np.ndarray], np.ndarray]:
-    """Fit data to a sum of one or more exponential functions. Useful for
-    estimating time constants.
-
-    Parameters
-    ----------
-    data : The data to be fit (1-D or 2-D array)
-    n_exps : The number of exponentials to fit to the data
-    n_coef : The number of coefficients used to fit the data. Must be >=6 and < 64.
-    dt : The sampling rate of the data. Used to scale the returned time constant(s)
-    axis : If data.dim is > 1, specify the time dimension
-
-    Returns
-    -------
-        dict
-           {offset, amplitude, lifetime}
-        array
-           The fitted data
-
-    """
-    from quickspikes._chebyshev import fitexps
-
-    params, fitted = fitexps(data, n_exps, n_coef, deltat=dt, axis=axis)
-    return (
-        {
-            "offset": params[..., 0],
-            "amplitude": params[..., 1 : (1 + n_exps)],
-            "lifetime": params[..., (1 + n_exps) : (1 + 2 * n_exps)],
-        },
-        fitted,
-    )

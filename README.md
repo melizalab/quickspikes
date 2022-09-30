@@ -66,6 +66,24 @@ Note that the list of event times may need to be filtered to avoid trying to acc
 
 There is also a reference copy of an ANSI C implementation and an `f2py` wrapper in `f2py/`. This algorithm is slightly less efficient and flexible, but may give better results if included directly in a C codebase.
 
+### Intracellular spikes
+
+There are some specialized tools for working with intracellular data.
+Intracellular recordings present some special challenges for detecting spikes.
+The data are not centered, and spike waveforms can change over the course of
+stimulation. The approach used here is to find the largest spike in the recording,
+(typically the first) and locate the onset of the spike based on when the derivative begins to rapidly increase. The peak and onset are used to set a threshold for extracting subsequent spikes.
+
+The following is an example for a recording at 50 kHz of a neuron with spikes that have a rise time of about 1 ms (50 samples). Spikes waveforms will start 7 ms before the peak and end 40 ms after, and will be trimmed to avoid any overlap with subsequent spikes.
+
+``` python
+from quickspikes.intracellular import SpikeFinder
+detector = SpikeFinder(n_rise=50, n_before=350, n_after=2000)
+detector.calculate_threshold(samples)
+times, spikes = zip(*detector.extract_spikes(samples, min_amplitude=10))
+
+```
+
 ### License
 
 Free for use under the terms of the GNU General Public License. See [[COPYING]]

@@ -80,8 +80,8 @@ def test_detect_intrac_spikes(intrac_recording):
 def test_align_spikes(intrac_recording):
     recording, times, *_ = intrac_recording
     jitter = 4
-    spikes = peaks(recording, times, 200, 400)
-    aln_times, aligned = realign_spikes(times, spikes, 3, jitter)
+    spikes = peaks(recording, times, n_before=200, n_after=400)
+    aln_times, aligned = realign_spikes(times, spikes, upsample=3, jitter=jitter)
     apeak = aligned.argmax(1)
     assert all(apeak == apeak[0])
     # times should have shifted no more than jitter
@@ -94,8 +94,8 @@ def test_trim(intrac_recording):
     """spikes can be trimmed to eliminate overlapping peaks """
     recording, times, *_ = intrac_recording
     det = detector(-20, 100)
-    spikes = peaks(recording, times, 200, 700)
-    for _, spike_w in trim_waveforms(spikes, times, 200, 100):
+    spikes = peaks(recording, times, n_before=200, n_after=700)
+    for _, spike_w in trim_waveforms(spikes, times, peak_t=200, n_rise=100):
         t = det(spike_w.astype("d"))
         assert t == [200]
 
@@ -109,7 +109,7 @@ def test_extrac_shape():
 def test_intrac_trough(intrac_recording):
     """spike_shape finds trough under normal conditions"""
     recording, times, *_ = intrac_recording
-    spikes = peaks(recording, times, 200, 400)
+    spikes = peaks(recording, times, n_before=200, n_after=400)
     for i, spike in enumerate(spikes):
         shape = spike_shape(spike, dt=1, t_baseline=100, min_rise=13)
         peak = shape.peak_t
@@ -119,7 +119,7 @@ def test_intrac_trough(intrac_recording):
 def test_intrac_trough_no_min(intrac_recording):
     """spike_shape finds trough when the spike is clipped"""
     recording, times, *_ = intrac_recording
-    spikes = peaks(recording, times[:1], 100, 100)
+    spikes = peaks(recording, times[:1], n_before=100, n_after=100)
     for spike in spikes:
         shape = spike_shape(spike, dt=1, t_baseline=100, min_rise=13)
         peak = shape.peak_t
@@ -130,14 +130,14 @@ def test_intrac_onset(intrac_recording):
     """correctly detect onset time """
     # this case is based on manual inspection of the spike waveform
     recording, times, takeoff = intrac_recording
-    spike = peaks(recording, times[:1], 200, 100)[0]
+    spike = peaks(recording, times[:1], n_before=200, n_after=100)[0]
     shape = spike_shape(spike, dt=1, t_baseline=100, min_rise=13)
     assert shape.takeoff_t == takeoff
 
 
 def test_intrac_no_onset(intrac_recording):
     recording, times, takeoff = intrac_recording
-    spike = peaks(recording, times[:1], 20, 100)[0]
+    spike = peaks(recording, times[:1], n_before=20, n_after=100)[0]
     shape = spike_shape(spike, dt=1, t_baseline=80, min_rise=13)
     assert shape.takeoff_t is None
 
@@ -155,7 +155,7 @@ def test_spike_finder_intrac(intrac_recording):
     shape = detector.calculate_threshold(recording)
     assert shape.takeoff_t == takeoff
     for i, (time, spike) in enumerate(
-            detector.extract_spikes(recording, 10, upsample=2, jitter=4)
+            detector.extract_spikes(recording, min_amplitude=10, upsample=2, jitter=4)
     ):
         assert time == pytest.approx(times[i], abs=4)
 
@@ -168,7 +168,7 @@ def test_no_spikes():
     detector = SpikeFinder(50, 350, 5000)
     signal = np.random.randn(100000)
     detector.spike_thresh = 50
-    times = [t for t, s in detector.extract_spikes(signal, 40)]
+    times = [t for t, s in detector.extract_spikes(signal, min_amplitude=40)]
     assert len(times) == 0
 
 
@@ -184,12 +184,12 @@ def test_thresh_for_max_at_edge_of_signal(intrac_recording):
 
 def test_run():
     a = np.arange(-10, 10)
-    assert find_run(a, 0, 5) == 11
+    assert find_run(a, thresh=0, min_run=5) == 11
 
 
 def test_no_run():
     a = np.zeros(20)
     a[10:14] = 1
-    assert find_run(a, 0, 5) is None
+    assert find_run(a, thresh=0, min_run=5) is None
 
 

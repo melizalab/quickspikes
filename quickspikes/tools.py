@@ -20,6 +20,7 @@ def filter_times(
 def realign_spikes(
     times: Iterable[numeric],
     spikes: np.ndarray,
+    *,
     upsample: int,
     jitter: int = 3,
     reflect_fft: bool = False,
@@ -72,7 +73,7 @@ def find_peaks(spikes: np.ndarray, peak: int, window: int) -> np.ndarray:
     return spikes[:, r].argmax(1) - window
 
 
-def fftresample(S: np.ndarray, npoints: int, reflect: bool = False) -> np.ndarray:
+def fftresample(S: np.ndarray, npoints: int, *, reflect: bool = False) -> np.ndarray:
     """Resample an array of waveforms using discrete fourier transform. The
     signal is transformed in the fourier domain and then padded or truncated to
     the desired size. This should be equivalent to a sinc resampling.
@@ -98,7 +99,7 @@ def fftresample(S: np.ndarray, npoints: int, reflect: bool = False) -> np.ndarra
 
 
 def trim_waveforms(
-    spikes: Iterable[np.ndarray], times: Iterable[int], peak_t: int, n_rise: int
+    spikes: Iterable[np.ndarray], times: Iterable[int], *, peak_t: int, n_rise: int
 ) -> Iterator[Tuple[int, np.ndarray]]:
     """Trims spike waveforms to remove overlapping peaks.
 

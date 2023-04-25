@@ -30,6 +30,7 @@ Spike = namedtuple(
 def spike_shape(
     spike: np.ndarray,
     dt: float,
+    *,
     deriv_thresh: float = 10.0,
     t_baseline: float = 2.0,
     min_rise: float = 0.25,
@@ -72,7 +73,7 @@ def spike_shape(
     peak_v = spike[peak_ind]
     deriv = np.gradient(spike, dt)
     # trough
-    dV0_ind = find_run(deriv[peak_ind:], 0, min_rise) or spike.size
+    dV0_ind = find_run(deriv[peak_ind:], thresh=0, min_run=min_rise) or spike.size
     trough_ind = spike[peak_ind : peak_ind + dV0_ind].argmin()
     # min and max dV/dt
     dVmax_ind = deriv[:peak_ind].argmax()
@@ -92,10 +93,11 @@ def spike_shape(
         takeoff_v = spike[takeoff_ind]
         takeoff_t = (peak_ind - takeoff_ind) * dt
         half_ampl = (peak_v + takeoff_v) / 2
-        half_rise_ind = find_run(spike[:peak_ind], half_ampl, 1) or 0
+        half_rise_ind = find_run(spike[:peak_ind], thresh=half_ampl, min_run=1) or 0
         half_rise_t = (peak_ind - half_rise_ind) * dt
         half_decay_ind = (
-            find_run(-spike[peak_ind:], -half_ampl, 2) or spike.size - peak_ind
+            find_run(-spike[peak_ind:], thresh=-half_ampl, min_run=2)
+            or spike.size - peak_ind
         )
         half_decay_t = half_decay_ind * dt
     return Spike(
@@ -136,6 +138,7 @@ class SpikeFinder:
     def calculate_threshold(
         self,
         V: np.ndarray,
+        *,
         thresh_rel: float = 0.35,
         thresh_min: float = -50,
         deriv_thresh: float = 10.0,
@@ -149,7 +152,7 @@ class SpikeFinder:
 
         """
         self.spike_thresh = self.first_spike_amplitude = None
-        first_peak_idx = V[self.n_before:-self.n_after].argmax() + self.n_before
+        first_peak_idx = V[self.n_before : -self.n_after].argmax() + self.n_before
         first_spike = V[first_peak_idx - self.n_before : first_peak_idx + self.n_after]
         shape = spike_shape(
             first_spike,
@@ -169,15 +172,14 @@ class SpikeFinder:
         return shape
 
     def detect_spikes(self, V: np.ndarray) -> Iterator[int]:
-        """ Using the calculated threshold, detect spikes that are extractable """
+        """Using the calculated threshold, detect spikes that are extractable"""
         from quickspikes import detector, filter_times
+
         det = detector(self.spike_thresh, self.n_rise)
-        return filter_times(
-            det.send(V), self.n_before, V.size - self.n_after
-        )
+        return filter_times(det.send(V), self.n_before, V.size - self.n_after)
 
     def extract_spikes(
-        self, V: np.ndarray, min_amplitude: float, upsample: int = 2, jitter: int = 4
+        self, V: np.ndarray, *, min_amplitude: float, upsample: int = 2, jitter: int = 4
     ) -> Iterator[Tuple[int, np.ndarray]]:
         """Detect and extract spikes from V.
 
@@ -194,18 +196,18 @@ class SpikeFinder:
         spike_times = self.detect_spikes(V)
         if len(spike_times) == 0:
             return
-        spikes = peaks(V, spike_times, self.n_before, self.n_after)
+        spikes = peaks(V, spike_times, n_before=self.n_before, n_after=self.n_after)
         spike_times, spikes = realign_spikes(
             spike_times,
             spikes,
-            upsample,
+            upsample=upsample,
             reflect_fft=True,
             expected_peak=self.n_before,
         )
         # original version of this located the peak after resampling, but I
         # don't think this is generally necessary
         for time, spike in trim_waveforms(
-            spikes, spike_times, self.n_before, self.n_rise * 2
+            spikes, spike_times, peak_t=self.n_before, n_rise=self.n_rise * 2
         ):
             if not np.any(spike - self.spike_thresh > min_amplitude):
                 continue

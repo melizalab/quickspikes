@@ -117,7 +117,7 @@ cdef class detector:
 
 
 @boundscheck(False)
-def peaks(sample_t[:] samples, times, size_t n_before=75, size_t n_after=400):
+def peaks(sample_t[:] samples, times, *, size_t n_before=75, size_t n_after=400):
     """Extracts samples around times
 
     Returns a 2D array with len(times) rows and (n_before + n_after) columns
@@ -154,7 +154,7 @@ def peaks(sample_t[:] samples, times, size_t n_before=75, size_t n_after=400):
     return out
 
 
-def find_run(sample_t[:] values, sample_t thresh, long min_run):
+def find_run(sample_t[:] values, *, sample_t thresh, long min_run):
     """ Return the index of the first element in values that starts a run of at
     least min_run in length, or None if no such run exists. """
     cdef long i
@@ -172,7 +172,7 @@ def find_run(sample_t[:] values, sample_t thresh, long min_run):
     return None
 
 
-def subthreshold(double[:] samples, times,
+def subthreshold(double[:] samples, times, *,
                  double v_thresh=-50, double dv_thresh=0, size_t min_size=10):
     """Removes spikes from time series
 

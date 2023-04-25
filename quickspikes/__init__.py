@@ -8,4 +8,4 @@ Created Wed Jul 24 09:26:36 2013
 from .spikes import detector, peaks, subthreshold
 from .tools import realign_spikes, filter_times
 
-__version__ = "1.4.0"
+__version__ = "1.4.1"

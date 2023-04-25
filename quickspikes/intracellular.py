@@ -201,7 +201,6 @@ class SpikeFinder:
             spike_times,
             spikes,
             upsample=upsample,
-            reflect_fft=True,
             expected_peak=self.n_before,
         )
         # original version of this located the peak after resampling, but I

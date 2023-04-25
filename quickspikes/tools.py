@@ -5,7 +5,8 @@
 Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Fri Jul 12 14:05:16 2013
 """
-from typing import Iterable, Union, Tuple, Optional, Iterator, Mapping
+from collections.abc import Callable
+from typing import Iterable, Union, Tuple, Optional, Iterator
 import numpy as np
 
 numeric = Union[int, float, np.number]
@@ -17,60 +18,64 @@ def filter_times(
     return tuple(t for t in times if (t > min) and (t < max))
 
 
+def align_by_peak(spikes: np.ndarray):
+    return spikes.argmax(-1)
+
+
+def align_by_trough(spikes: np.ndarray):
+    return spikes.argmin(-1)
+
+
 def realign_spikes(
     times: Iterable[numeric],
     spikes: np.ndarray,
     *,
     upsample: int,
+    align_by: Callable[[np.ndarray], Union[np.ndarray, int]] = align_by_peak,
     jitter: int = 3,
-    reflect_fft: bool = False,
     expected_peak: Optional[int] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """Realign spikes to their peaks using bandwidth-limited resampling
+    """Realign spikes to their peaks (or some other feature) using bandwidth-limited resampling
 
     times    : one-dimensional array of spike times, in units of samples
     spikes   : array of spike waveforms, with dimensions (nspikes, npoints)
     upsample : integer, the factor by which to upsample the data for realignment (must be greater than 1)
-    jitter   : samples (in original data) to search for true peak
+    align_by : function that returns the alignment point in each spike (see below)
+    jitter   : samples (in original data) to search for the alignment point
     expected_peak : if supplied, searches around this index (in original data) for the peak. If not supplied,
-                    uses the argmax of the mean spike
+                    uses align_by on the mean spike
 
-    Returns (times, spikes), with the sampling rate increased by a factor of upsample
+    The align_by function takes a 1D or 2D array and returns the index
+    corresponding to the alignment point in the spike. If the array is 1D, the
+    function should return a single number. If the array is 2D, the function
+    must return an array. For example, align_by_peak is lambda x: x.argmax(-1)
+
+    Returns (times, spikes), with the sampling rate increased by a factor of
+    upsample.
 
     """
-    assert (
-        isinstance(upsample, int) and upsample > 1
-    ), "Upsampling factor must be an integer greater than 1"
+    if not (isinstance(upsample, int) and upsample > 1):
+        raise ValueError("Upsampling factor must be an integer greater than 1")
     nevents, nsamples = spikes.shape
 
-    # first infer the expected peak time
     if expected_peak is None:
-        expected_peak = np.mean(spikes, 0).argmax() * upsample
-    else:
-        expected_peak *= upsample
-    spikes = fftresample(spikes, int(nsamples * upsample), reflect=reflect_fft)
+        # infer expected peak from the mean spike
+        expected_peak = align_by(np.mean(spikes, 0))
+    expected_peak *= upsample
+
+    spikes = fftresample(spikes, int(nsamples * upsample), reflect=True)
     # find peaks within upsample samples of mean peak
-    shift = find_peaks(spikes, expected_peak, upsample * jitter)
-    start = shift + upsample * jitter
+    window = upsample * jitter
+    # output array is clipped by jitter on both ends and then upsampled
     nshifted = (nsamples - 2 * jitter) * upsample
     shifted = np.zeros((nevents, nshifted))
+    # offset is the position of the peak (or trough) within the search window
+    search = slice(expected_peak - window, expected_peak + window + 1)
+    start = align_by(spikes[:, search])
     for i, spike in enumerate(spikes):
         shifted[i, :] = spike[start[i] : start[i] + nshifted]
-    return (np.asarray(times) * upsample + shift, shifted)
-
-
-def find_peaks(spikes: np.ndarray, peak: int, window: int) -> np.ndarray:
-    """Locate the peaks in an array of spikes.
-
-    spikes: resampled spike waveforms, dimensions (nspikes, nsamples)
-    peak:   the expected peak location
-    window: the number of samples to either side of the peak to look for the peak
-
-    Returns array of shift values relative to peak
-
-    """
-    r = slice(peak - window, peak + window + 1)
-    return spikes[:, r].argmax(1) - window
+    # spike times are shifted by offset - search window
+    return (np.asarray(times) * upsample + start - window, shifted)
 
 
 def fftresample(S: np.ndarray, npoints: int, *, reflect: bool = False) -> np.ndarray:

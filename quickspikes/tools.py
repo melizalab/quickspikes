@@ -31,7 +31,7 @@ def realign_spikes(
     spikes   : array of spike waveforms, with dimensions (nspikes, npoints)
     upsample : integer, the factor by which to upsample the data for realignment (must be greater than 1)
     jitter   : samples (in original data) to search for true peak
-    expected_peak : if supplied, searches around this index for the peak. If not supplied,
+    expected_peak : if supplied, searches around this index (in original data) for the peak. If not supplied,
                     uses the argmax of the mean spike
 
     Returns (times, spikes), with the sampling rate increased by a factor of upsample

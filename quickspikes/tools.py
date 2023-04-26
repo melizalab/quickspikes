@@ -5,8 +5,7 @@
 Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Fri Jul 12 14:05:16 2013
 """
-from collections.abc import Callable
-from typing import Iterable, Union, Tuple, Iterator
+from typing import Iterable, Union, Tuple, Optional, Iterator, Callable
 import numpy as np
 
 numeric = Union[int, float, np.number]
@@ -42,7 +41,7 @@ def realign_spikes(
     upsample: int,
     align_by: Callable[[np.ndarray], Union[np.ndarray, int]] = peak_idx,
     jitter: int = 3,
-    expected_peak: Union[int, None] = None,
+    expected_peak: Optional[int] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Realign spikes to their peaks (or some other feature) using bandwidth-limited resampling
 

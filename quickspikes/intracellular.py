@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 """specialized functions for intracellular data"""
-from typing import Tuple, Optional, Iterator, Mapping
+from typing import Tuple, Union, Iterator
 from collections import namedtuple
 import logging
 import numpy as np
@@ -34,7 +34,7 @@ def spike_shape(
     deriv_thresh: float = 10.0,
     t_baseline: float = 2.0,
     min_rise: float = 0.25,
-) -> Optional[Spike]:
+) -> Union[Spike, None]:
     """Computes spike shape features:
 
     takeoff: the voltage/time when the derivative of the waveform exceeds
@@ -142,7 +142,7 @@ class SpikeFinder:
         thresh_rel: float = 0.35,
         thresh_min: float = -50,
         deriv_thresh: float = 10.0,
-    ) -> Optional[Spike]:
+    ) -> Union[Spike, None]:
         """Calculate the detection threshold from the amplitude of the first spike in V.
 
         If no spike can be detected in the signal, returns None. Otherwise, the

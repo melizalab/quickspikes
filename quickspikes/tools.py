@@ -18,12 +18,21 @@ def filter_times(
     return tuple(t for t in times if (t > min) and (t < max))
 
 
-def align_by_peak(spikes: np.ndarray):
+def peak_idx(spikes: np.ndarray):
+    """ Return index of maximum negative value """
     return spikes.argmax(-1)
 
 
-def align_by_trough(spikes: np.ndarray):
+def trough_idx(spikes: np.ndarray):
+    """ Return index of maximum positive value"""
     return spikes.argmin(-1)
+
+
+def upswing_idx(spikes: np.ndarray):
+    """ Return index of the point midway between the trough and the following peak """
+    trough = trough_idx(spikes)
+    # need to find the local maximum after the trough, not the global max
+    raise NotImplementedError
 
 
 def realign_spikes(
@@ -31,7 +40,7 @@ def realign_spikes(
     spikes: np.ndarray,
     *,
     upsample: int,
-    align_by: Callable[[np.ndarray], Union[np.ndarray, int]] = align_by_peak,
+    align_by: Callable[[np.ndarray], Union[np.ndarray, int]] = peak_idx,
     jitter: int = 3,
     expected_peak: Optional[int] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -48,7 +57,7 @@ def realign_spikes(
     The align_by function takes a 1D or 2D array and returns the index
     corresponding to the alignment point in the spike. If the array is 1D, the
     function should return a single number. If the array is 2D, the function
-    must return an array. For example, align_by_peak is lambda x: x.argmax(-1)
+    must return an array. For example, peak_idx is lambda x: x.argmax(-1)
 
     Returns (times, spikes), with the sampling rate increased by a factor of
     upsample.

@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from quickspikes.spikes import detector, peaks, find_run
-from quickspikes.tools import filter_times, realign_spikes, trim_waveforms, align_by_peak, align_by_trough
+from quickspikes.tools import filter_times, realign_spikes, trim_waveforms, peak_idx, trough_idx
 from quickspikes.intracellular import SpikeFinder, spike_shape
 
 # a nice surrogate spike with 20 samples before peak and 40 after
@@ -81,7 +81,7 @@ def test_align_extrac_by_peak(extrac_spikes):
     upsample = 3
     jitter = 3
     nevents, npoints = extrac_spikes.shape
-    times, aligned = realign_spikes(np.zeros(nevents), extrac_spikes, upsample=upsample, jitter=jitter, align_by=align_by_peak)
+    times, aligned = realign_spikes(np.zeros(nevents), extrac_spikes, upsample=upsample, jitter=jitter, align_by=peak_idx)
     apeak = aligned.argmax(-1)
     assert all(apeak == apeak[0])
     assert all(abs(times) <= jitter * upsample)
@@ -91,7 +91,7 @@ def test_align_extrac_by_trough(extrac_spikes):
     upsample = 3
     jitter = 3
     nevents, npoints = extrac_spikes.shape
-    times, aligned = realign_spikes(np.zeros(nevents), extrac_spikes, upsample=upsample, jitter=jitter, align_by=align_by_trough)
+    times, aligned = realign_spikes(np.zeros(nevents), extrac_spikes, upsample=upsample, jitter=jitter, align_by=trough_idx)
     apeak = aligned.argmin(-1)
     assert all(apeak == apeak[0])
     assert all(abs(times) <= jitter * upsample)

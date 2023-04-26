@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from quickspikes.spikes import detector, peaks, find_run
-from quickspikes.tools import filter_times, realign_spikes, trim_waveforms
+from quickspikes.tools import filter_times, realign_spikes, trim_waveforms, align_by_peak, align_by_trough
 from quickspikes.intracellular import SpikeFinder, spike_shape
 
 # a nice surrogate spike with 20 samples before peak and 40 after
@@ -25,13 +25,19 @@ def extrac_times():
     return  [100, 400, 1200, 1500, 5000, 5200, 6123, 9730]
 
 
-@pytest.fixture(params=[np.double, np.int32])
+@pytest.fixture(params=[np.double, np.int32, np.int16])
 def extrac_recording(extrac_times, request):
     a_recording = np.zeros(10000, dtype=request.param)
     for t in extrac_times:
         a_recording[t:t + a_spike.size] += a_spike
     return a_recording
     
+
+@pytest.fixture
+def extrac_spikes():
+    np.random.seed(100)
+    return np.tile(-1.0 * a_spike.astype("d"), (100, 1)) + np.random.randn(100, a_spike.size) * 100
+
 
 @pytest.fixture(params=["wide", "narrow"])
 def intrac_recording(request):
@@ -65,11 +71,31 @@ def test_extract_spikes(extrac_recording, extrac_times):
     n_after = 300
     times = filter_times([t + t_peak for t in extrac_times], n_before, extrac_recording.size - n_after)
     x = peaks(extrac_recording, times, n_before=n_before, n_after=n_after)
-    # last peak should get dropped
+    # last peak is too close to end and should get dropped
     assert x.shape[0] == len(extrac_times) - 1
     assert x.shape[1] == n_before + n_after
     assert np.all(a_spike == x[0,:a_spike.size])
 
+
+def test_align_extrac_by_peak(extrac_spikes):
+    upsample = 3
+    jitter = 3
+    nevents, npoints = extrac_spikes.shape
+    times, aligned = realign_spikes(np.zeros(nevents), extrac_spikes, upsample=upsample, jitter=jitter, align_by=align_by_peak)
+    apeak = aligned.argmax(-1)
+    assert all(apeak == apeak[0])
+    assert all(abs(times) <= jitter * upsample)
+
+
+def test_align_extrac_by_trough(extrac_spikes):
+    upsample = 3
+    jitter = 3
+    nevents, npoints = extrac_spikes.shape
+    times, aligned = realign_spikes(np.zeros(nevents), extrac_spikes, upsample=upsample, jitter=jitter, align_by=align_by_trough)
+    apeak = aligned.argmin(-1)
+    assert all(apeak == apeak[0])
+    assert all(abs(times) <= jitter * upsample)
+            
 
 def test_detect_intrac_spikes(intrac_recording):
     recording, times, *_ = intrac_recording

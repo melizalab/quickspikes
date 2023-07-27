@@ -18,17 +18,17 @@ def filter_times(
 
 
 def peak_idx(spikes: np.ndarray):
-    """ Return index of maximum negative value """
+    """Return index of maximum negative value"""
     return spikes.argmax(-1)
 
 
 def trough_idx(spikes: np.ndarray):
-    """ Return index of maximum positive value"""
+    """Return index of maximum positive value"""
     return spikes.argmin(-1)
 
 
 def upswing_idx(spikes: np.ndarray):
-    """ Return index of the point midway between the trough and the following peak """
+    """Return index of the point midway between the trough and the following peak"""
     trough = trough_idx(spikes)
     # need to find the local maximum after the trough, not the global max
     raise NotImplementedError
@@ -38,7 +38,7 @@ def realign_spikes(
     times: Iterable[numeric],
     spikes: np.ndarray,
     *,
-    upsample: int,
+    upsample: int = 1,
     align_by: Callable[[np.ndarray], Union[np.ndarray, int]] = peak_idx,
     jitter: int = 3,
     expected_peak: Optional[int] = None,
@@ -62,8 +62,8 @@ def realign_spikes(
     upsample.
 
     """
-    if not (isinstance(upsample, int) and upsample > 1):
-        raise ValueError("Upsampling factor must be an integer greater than 1")
+    if not (isinstance(upsample, int) and upsample > 0):
+        raise ValueError("Upsampling factor must be a positive integer")
     nevents, nsamples = spikes.shape
 
     if expected_peak is None:
@@ -71,7 +71,8 @@ def realign_spikes(
         expected_peak = align_by(np.mean(spikes, 0))
     expected_peak *= upsample
 
-    spikes = fftresample(spikes, int(nsamples * upsample), reflect=True)
+    if upsample > 1:
+        spikes = fftresample(spikes, int(nsamples * upsample), reflect=True)
     # find peaks within upsample samples of mean peak
     window = upsample * jitter
     # output array is clipped by jitter on both ends and then upsampled

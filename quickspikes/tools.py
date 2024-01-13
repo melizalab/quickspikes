@@ -29,7 +29,7 @@ def trough_idx(spikes: np.ndarray):
 
 def upswing_idx(spikes: np.ndarray):
     """Return index of the point midway between the trough and the following peak"""
-    trough = trough_idx(spikes)
+    _trough = trough_idx(spikes)
     # need to find the local maximum after the trough, not the global max
     raise NotImplementedError
 

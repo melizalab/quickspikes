@@ -17,6 +17,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.16
         env:
           CIBW_ARCHS_MACOS: auto universal2
+          CIBW_SKIP: pp*win_amd64 
         with:
           package-dir: .
           output-dir: wheelhouse

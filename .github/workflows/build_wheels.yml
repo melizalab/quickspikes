@@ -64,14 +64,16 @@ jobs:
           name: all-files
           pattern: artifact-*
 
-          - uses: actions/download-artifact@v4
+      - name: Download merged artifact
+        uses: actions/download-artifact@v4
         with:
           # unpacks default artifact into dist/
           # if `name: artifact` is omitted, the action will create extra parent dir
           name: all-files
           path: dist
 
-      - uses: pypa/gh-action-pypi-publish@v1.8.14
+      - name: Publish wheels to PyPi
+        uses: pypa/gh-action-pypi-publish@v1.8.14
         with:
           user: __token__
           password: ${{ secrets.pypi_password }}

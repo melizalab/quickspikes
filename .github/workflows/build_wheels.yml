@@ -23,7 +23,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.18
         env:
           CIBW_ARCHS_MACOS: auto
-          CIBW_SKIP: pp*win_amd64 
+          CIBW_SKIP: "pp*win_amd64 cp313-win*"
         with:
           package-dir: .
           output-dir: wheelhouse

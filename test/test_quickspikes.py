@@ -327,7 +327,7 @@ def test_thresh_for_max_at_edge_of_signal(intrac_recording):
 
 
 def test_run():
-    a = np.arange(-10, 10)
+    a = np.arange(-10.0, 10.0)
     assert find_run(a, thresh=0, min_run=5) == 11
 
 

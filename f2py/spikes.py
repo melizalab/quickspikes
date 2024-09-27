@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # -*- mode: python -*-
 """
 Functions to extract spikes from an intracellular recording
@@ -91,7 +90,7 @@ def fftresample(S, npoints, axis=1, padding='flip'):
     to the correct sampling frequency.  This should be equivalent to
     a sinc resampling.
     """
-    from numpy.fft import rfft, irfft
+    from numpy.fft import irfft, rfft
     if padding == 'flip':
         S = nx.concatenate([S[::-1], S, S[::-1]],0)
         npoints *=3

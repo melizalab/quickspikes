@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
 # -*- mode: python -*-
 """spike detection and extraction
 
 Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Fri Jul 12 14:05:16 2013
 """
-from typing import Iterable, Union, Tuple, Optional, Iterator, Callable
+from typing import Callable, Iterable, Iterator, Optional, Tuple, Union
+
 import numpy as np
 
 numeric = Union[int, float, np.number]
@@ -97,7 +97,7 @@ def fftresample(S: np.ndarray, npoints: int, *, reflect: bool = False) -> np.nda
     reflect: if True, pad the sample with reflected copies on either end to suppress edge effects
 
     """
-    from numpy.fft import rfft, irfft
+    from numpy.fft import irfft, rfft
 
     if reflect:
         Srev = S[:, ::-1]

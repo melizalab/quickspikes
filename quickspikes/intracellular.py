@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 # -*- mode: python -*-
 """specialized functions for intracellular data"""
-from typing import Tuple, Optional, Iterator
-from collections import namedtuple
 import logging
+from collections import namedtuple
+from typing import Iterator, Optional, Tuple
+
 import numpy as np
 
 log = logging.getLogger("quickspikes")
@@ -191,7 +191,7 @@ class SpikeFinder:
         Yields (t, spike)
         """
         from quickspikes import peaks
-        from quickspikes.tools import trim_waveforms, realign_spikes
+        from quickspikes.tools import realign_spikes, trim_waveforms
 
         spike_times = self.detect_spikes(V)
         if len(spike_times) == 0:

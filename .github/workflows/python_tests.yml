@@ -25,6 +25,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install Ninja (Linux)
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y ninja-build
+    - name: Install Ninja (macOS)
+      if: runner.os == 'macOS'
+      run: brew install ninja
+    - name: Install Ninja (Windows)
+      if: runner.os == 'Windows'
+      run: choco install ninja
     - name: Install uv
       uses: astral-sh/setup-uv@v4
       with:
@@ -33,11 +42,6 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install ninja
-      run: |
-        uv venv
-        uv pip install ninja
-        echo "NINJA=$(uv pip show ninja | grep Location | cut -d ' ' -f 2)/ninja/data/bin/ninja" >> $GITHUB_ENV
     - name: Install dependencies
       run: uv sync --all-extras --dev
     - name: Build extension module

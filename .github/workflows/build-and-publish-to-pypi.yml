@@ -7,10 +7,9 @@ jobs:
     name: ${{ matrix.os }} • ${{ matrix.python }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        # os: [ubuntu-latest, windows-latest, macos-13, macos-14]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
         python: [cp37, cp38, cp39, cp310, cp311, cp312, pp37, pp38, pp39, pp310]
         exclude:
           # Exclude Python 3.7 on newer platforms

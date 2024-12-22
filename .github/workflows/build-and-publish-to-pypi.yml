@@ -10,9 +10,8 @@ jobs:
       fail-fast: true
       matrix:
         # os: [ubuntu-latest, windows-latest, macos-13, macos-14]
-        # python: [cp37, cp38, cp39, cp310, cp311, cp312, pp37, pp38, pp39, pp310]
         os: [ubuntu-latest]
-        python: [cp312]
+        python: [cp37, cp38, cp39, cp310, cp311, cp312, pp37, pp38, pp39, pp310]
         exclude:
           # Exclude Python 3.7 on newer platforms
           - os: macos-14
@@ -33,6 +32,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Docker cache
+        if: runner.os == 'Linux'
+        uses: ScribeMD/docker-cache@0.4.0
+        with:
+          key: docker-${{ runner.os }}-${{ matrix.python }}-${{ github.sha }}
+          restore-keys: |
+            docker-${{ runner.os }}-${{ matrix.python }}-
+            docker-${{ runner.os }}-
+            
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.22
         env:

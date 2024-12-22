@@ -1,7 +1,6 @@
 # -*- mode: python -*-
 import numpy as np
 import pytest
-from pathlib import Path
 
 from quickspikes.intracellular import SpikeFinder, spike_shape
 from quickspikes.spikes import detector, find_run, peaks
@@ -108,9 +107,8 @@ def extrac_spikes():
 @pytest.fixture(params=["wide", "narrow"])
 def intrac_recording(request):
     # a bit klunky
-    test_dir = Path(__file__).parent
     if request.param == "wide":
-        recording = np.load(test_dir / "intra_spike.npy")
+        recording = np.load("test/intra_spike.npy")
         times = [
             7635,
             8412,
@@ -135,7 +133,7 @@ def intrac_recording(request):
         ]
         takeoff = 24
     elif request.param == "narrow":
-        recording = np.load(test_dir / "intra_spike_narrow.npy")
+        recording = np.load("test/intra_spike_narrow.npy")
         times = [
             8325,
             8816,

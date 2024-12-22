@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 # -*- mode: python -*-
-from setuptools import setup
+import numpy
+from setuptools import Extension, setup
 
-setup()
+setup(
+    ext_modules=[Extension("quickspikes.spikes", sources=["quickspikes/spikes.pyx"])],
+    include_dirs=[numpy.get_include()],
+)

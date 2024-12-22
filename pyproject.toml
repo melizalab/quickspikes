@@ -1,82 +1,8 @@
 [build-system]
-requires = [
-    "cython >= 3.0.2",
-    "meson >= 1.0.0",
-    "meson-python >= 0.14.0",
-]
-build-backend = "mesonpy"
-
-[project]
-name = "quickspikes"
-version = "2.0.6"
-description = "detect and extract spikes in time series data"
-readme = "README.rst"
-requires-python = ">=3.7"
-license = {text = "GNU General Public License (GPL)"}
-authors = [
-    {name = "C Daniel Meliza", email = "dan@meliza.org"},
-]
-maintainers = [
-    {name = "C Daniel Meliza", email = "dan@meliza.org"},
-]
-classifiers = [
-    "License :: OSI Approved :: GNU General Public License (GPL)",
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Console",
-    "Intended Audience :: Developers",
-    "Topic :: Multimedia :: Sound/Audio :: Conversion",
-    "Operating System :: Unix",
-    "Operating System :: POSIX :: Linux",
-    "Operating System :: MacOS :: MacOS X",
-    "Operating System :: Microsoft :: Windows",
-    "Natural Language :: English",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy"
-]
-dependencies = [
-    "numpy>=1.21.6; python_version == '3.7'",
-    "numpy>=1.23.2; python_version == '3.8'",
-    "numpy>=1.23.2; python_version == '3.9'",
-    "numpy>=1.23.2; python_version == '3.10'",
-    "numpy>=1.24.0; python_version == '3.11'",
-    "numpy>=1.26.0; python_version == '3.12'",
-]
-
-[project.urls]
-Homepage = "https://github.com/melizalab/quickspikes"
-
-[dependency-groups]
-dev = [
-    "pytest>=5.0",
-    "ruff>=0.7.0"
-]
-
-[tool.cibuildwheel]
-test-command = "pytest -v {package}/test"
-before-test = "pip install -r {package}/requirements-test.txt"
-
-
-[tool.black]
-line-length = 88
-target-version = ["py37"]
-include = '\.pyi?$'
-
-[tool.pytest.ini_options]
-python_files = ["test_*.py", "*_test.py"]
-addopts = "-v"
-testpaths = ["test"]
+requires = ["setuptools", "wheel", "numpy>=1.19.5", "cython>=0.29"]
 
 [tool.ruff]
-line-length = 88
 target-version = "py37"
-extend-exclude = ["build", "attic"]
 
 [tool.ruff.lint]
 extend-select = [
@@ -89,7 +15,4 @@ extend-select = [
 ]
 
 [tool.mypy]
-python_version = "3.7"
 ignore_missing_imports = true
-strict_optional = true
-check_untyped_defs = true

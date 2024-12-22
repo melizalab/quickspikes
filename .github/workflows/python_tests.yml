@@ -59,5 +59,13 @@ jobs:
     - name: Build extension module (Unix)
       if: runner.os != 'Windows'
       run: uv build
-    - name: Run tests on python ${{ matrix.python-version }}
+    - name: Run tests (Windows)
+      if: runner.os == 'Windows'
+      shell: cmd
+      run: |
+        set PATH=%PATH%;C:\tools\ninja
+        set PYTHONPATH=%CD%
+        uv run pytest
+    - name: Run tests (Unix)
+      if: runner.os != 'Windows'
       run: uv run pytest

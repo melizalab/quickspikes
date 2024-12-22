@@ -39,7 +39,7 @@ jobs:
         uv pip install ninja
         echo "NINJA=$(uv pip show ninja | grep Location | cut -d ' ' -f 2)/ninja/data/bin/ninja" >> $GITHUB_ENV
     - name: Install dependencies
-        run: uv sync --all-extras --dev
+      run: uv sync --all-extras --dev
     - name: Build extension module
       run: uv build
     - name: Run tests on python ${{ matrix.python-version }}

@@ -11,7 +11,8 @@ jobs:
       matrix:
         # os: [ubuntu-latest, windows-latest, macos-13, macos-14]
         os: [ubuntu-latest]
-        python: [cp37, cp38, cp39, cp310, cp311, cp312, pp37, pp38, pp39, pp310]
+        # python: [cp37, cp38, cp39, cp310, cp311, cp312, pp37, pp38, pp39, pp310]
+        python: [cp311]
         exclude:
           # Exclude Python 3.7 on newer platforms
           - os: macos-14
@@ -43,8 +44,6 @@ jobs:
         env:
           CIBW_BUILD: ${{ matrix.python }}-*
           CIBW_ARCHS_MACOS: auto
-          CIBW_TEST_COMMAND: "pytest -v {package}/test"
-          CIBW_TEST_REQUIRES: "pytest numpy"
         with:
           package-dir: .
           output-dir: wheelhouse

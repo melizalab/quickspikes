@@ -37,7 +37,7 @@ jobs:
       run: |
         uv venv
         uv pip install ninja
-        uv pip install -e .
+        uv sync --all-extras --dev
     - name: Build extension module
       run: uv build
     - name: Run tests on python ${{ matrix.python-version }}

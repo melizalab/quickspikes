@@ -59,7 +59,7 @@ dev = [
 ]
 
 [tool.cibuildwheel]
-test-command = "pytest -v {package}/tests"
+test-command = "pytest -v {package}/test"
 before-test = "pip install --only-binary=:all: -r {package}/requirements-test.txt"
 
 

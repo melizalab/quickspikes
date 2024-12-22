@@ -36,10 +36,7 @@ jobs:
         if: runner.os == 'Linux'
         uses: ScribeMD/docker-cache@0.4.0
         with:
-          key: docker-${{ runner.os }}-${{ matrix.python }}-${{ github.sha }}
-          restore-keys: |
-            docker-${{ runner.os }}-${{ matrix.python }}-
-            docker-${{ runner.os }}-
+          key: docker-${{ runner.os }}
             
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.22

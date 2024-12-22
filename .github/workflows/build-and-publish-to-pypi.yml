@@ -32,25 +32,25 @@ jobs:
             python: pp310
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.22
         env:
           CIBW_BUILD: ${{ matrix.python }}-*
           CIBW_ARCHS_MACOS: auto
-          # Skip 32-bit PyPy builds on Linux
-          CIBW_SKIP: "*-manylinux_i686 *-musllinux_i686"
+          CIBW_TEST_COMMAND: "pytest -v {package}/test"
+          CIBW_TEST_REQUIRES: "pytest numpy"
         with:
           package-dir: .
           output-dir: wheelhouse
           config-file: "{package}/pyproject.toml"
-          
+
       - name: Verify clean directory
         run: git diff --exit-code
         shell: bash
-        
+
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-${{ matrix.python }}
           path: ./wheelhouse/*.whl
-          
+

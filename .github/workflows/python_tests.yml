@@ -8,12 +8,14 @@ on: [push, pull_request]
 jobs:
   build:
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os: [macos-13, macos-14, ubuntu-latest, windows-latest]
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.7", "pypy3.8", "pypy3.9", "pypy3.10"]
         exclude:
           - os: macos-14
+            python-version: "3.7"
+          - os: windows-latest
             python-version: "3.7"
           - os: macos-14
             python-version: "pypy3.7"
@@ -32,7 +34,10 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      run: uv sync --all-extras --dev
+      run: |
+        uv venv
+        uv pip install ninja
+        uv pip install -e .
     - name: Build extension module
       run: uv build
     - name: Run tests on python ${{ matrix.python-version }}

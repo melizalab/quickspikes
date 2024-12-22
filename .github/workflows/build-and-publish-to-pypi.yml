@@ -4,7 +4,7 @@ on: push
 
 jobs:
   build_wheels:
-    name: ${{ matrix.os }} • ${{ matrix.python }}
+    name: ${{ matrix.os }} • ${{ matrix.arch }} • ${{ matrix.python }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -89,6 +89,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.os }}-${{ matrix.python }}
+          name: ${{ matrix.os }}-${{ matrix.python }}-${{ matrix.arch }}
           path: ./wheelhouse/*.whl
 

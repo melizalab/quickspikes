@@ -1,4 +1,4 @@
-name: Build wheels
+name: Build wheels and publish to pypi
 
 on: push
 
@@ -30,6 +30,14 @@ jobs:
             python: pp310
     steps:
       - uses: actions/checkout@v4
+      - name: Set version suffix for TestPyPI
+        id: set_version
+        run: |
+          if [[ ! "${{ github.ref }}" =~ ^refs/tags/ ]]; then
+            BUILD_NUM=${{ github.run_number }}
+            VERSION=$(grep '^__version__ = ' ewave.py | sed -E 's/__version__ = "(.*)"/\1/')
+            sed -i -e "s/^__version__ = \"${VERSION}\"/__version__ = \"${VERSION}.dev${BUILD_NUM}\"/" ewave.py
+          fi
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.22
         env:
@@ -47,13 +55,20 @@ jobs:
         with:
           name: artifact-${{ matrix.os }}-${{ matrix.python }}
           path: ./wheelhouse/*.whl
-          
+
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      - name: Set version suffix for TestPyPI
+        id: set_version
+        run: |
+          if [[ ! "${{ github.ref }}" =~ ^refs/tags/ ]]; then
+            BUILD_NUM=${{ github.run_number }}
+            VERSION=$(grep '^__version__ = ' ewave.py | sed -E 's/__version__ = "(.*)"/\1/')
+            sed -i -e "s/^__version__ = \"${VERSION}\"/__version__ = \"${VERSION}.dev${BUILD_NUM}\"/" ewave.py
+          fi
       - name: Build sdist
         run: pipx run build --sdist
 
@@ -61,6 +76,98 @@ jobs:
         with:
           name: artifact-source
           path: dist/*.tar.gz
+
+  merge_artifacts:
+    name: Merge artifacts
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: all-files
+          pattern: artifact-*
+
+  publish-to-pypi:
+    name: >-
+      Publish Python distribution to PyPI
+    if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
+    needs: [merge_artifacts]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/quickspikes
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: all-files
+        path: dist/
+    - name: Publish distribution to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: >-
+      Sign the Python distribution with Sigstore
+      and to GitHub Release
+    needs: [publish-to-pypi]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for sigstore
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: all-files
+        path: dist/
+    - name: Sign the dists with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v3.0.0
+      with:
+        inputs: >-
+          ./dist/*.tar.gz
+          ./dist/*.whl
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: >-
+        gh release create
+        '${{ github.ref_name }}'
+        --repo '${{ github.repository }}'
+        --notes ""
+    - name: Upload artifact signatures to GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      # Upload to GitHub Release using the `gh` CLI.
+      # `dist/` contains the built packages, and the
+      # sigstore-produced signatures and certificates.
+      run: >-
+        gh release upload
+        '${{ github.ref_name }}' dist/**
+        --repo '${{ github.repository }}'
+
+  publish-to-testpypi:
+    name: Publish Python distribution to TestPyPI
+    needs: [merge_artifacts]
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/quickspikes
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: all-files
+        path: dist/
+    - name: Publish distribution 📦 to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+        verbose: true
 
   # upload_pypi:
   #   name: Upload on release

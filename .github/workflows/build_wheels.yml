@@ -38,6 +38,7 @@ jobs:
             VERSION=$(grep '^__version__ = ' quickspikes/__init__.py | sed -E 's/__version__ = "(.*)"/\1/')
             sed -i -e "s/^__version__ = \"${VERSION}\"/__version__ = \"${VERSION}.dev${BUILD_NUM}\"/" quickspikes/__init__.py
           fi
+        shell: bash
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.22
         env:

@@ -1,41 +1,52 @@
 name: Build wheels
 
-on: [push, pull_request]
-# Alternatively, to publish when a (published) GitHub Release is created, use the following:
-# on:
-#   release:
-#     types:
-#       - published
+on: push
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.os }}
+    name: ${{ matrix.os }} • ${{ matrix.python }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13, macos-14]
-
+        python: [cp37, cp38, cp39, cp310, cp311, cp312, pp37, pp38, pp39, pp310]
+        exclude:
+          # Skip Python 3.7 on newer platforms
+          - os: macos-14
+            python: cp37
+          - os: windows-latest
+            python: cp37
+          - os: macos-14
+            python: pp37
+          - os: windows-latest
+            python: pp37
+          # Skip PyPy on Windows
+          - os: windows-latest
+            python: pp38
+          - os: windows-latest
+            python: pp39
+          - os: windows-latest
+            python: pp310
     steps:
       - uses: actions/checkout@v4
-
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.22
         env:
+          CIBW_BUILD: ${{ matrix.python }}-*
           CIBW_ARCHS_MACOS: auto
-          CIBW_SKIP: "pp*win_amd64 cp313-win* pp39-manylinux_i686 pp310-manylinux_i686"
         with:
           package-dir: .
           output-dir: wheelhouse
           config-file: "{package}/pyproject.toml"
       - name: Verify clean directory
         run: git diff --exit-code
-        shell: bash        
+        shell: bash
       - uses: actions/upload-artifact@v4
         with:
-          name: artifact-${{ matrix.os }}
+          name: artifact-${{ matrix.os }}-${{ matrix.python }}
           path: ./wheelhouse/*.whl
-
+          
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
@@ -50,32 +61,32 @@ jobs:
           name: artifact-source
           path: dist/*.tar.gz
 
-  upload_pypi:
-    name: Upload on release
-    needs: [build_wheels, build_sdist]
-    runs-on: ubuntu-latest
-    # upload to PyPI on every tag starting with 'v'
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    # alternatively, to publish when a GitHub Release is created, use the following rule:
-    # if: github.event_name == 'release' && github.event.action == 'published'
-    steps:
-      - name: Merge artifacts
-        uses: actions/upload-artifact/merge@v4
-        with:
-          name: all-files
-          pattern: artifact-*
+  # upload_pypi:
+  #   name: Upload on release
+  #   needs: [build_wheels, build_sdist]
+  #   runs-on: ubuntu-latest
+  #   # upload to PyPI on every tag starting with 'v'
+  #   if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+  #   # alternatively, to publish when a GitHub Release is created, use the following rule:
+  #   # if: github.event_name == 'release' && github.event.action == 'published'
+  #   steps:
+  #     - name: Merge artifacts
+  #       uses: actions/upload-artifact/merge@v4
+  #       with:
+  #         name: all-files
+  #         pattern: artifact-*
 
-      - name: Download merged artifact
-        uses: actions/download-artifact@v4
-        with:
-          # unpacks default artifact into dist/
-          # if `name: artifact` is omitted, the action will create extra parent dir
-          name: all-files
-          path: dist
+  #     - name: Download merged artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         # unpacks default artifact into dist/
+  #         # if `name: artifact` is omitted, the action will create extra parent dir
+  #         name: all-files
+  #         path: dist
 
-      - name: Publish wheels to PyPi
-        uses: pypa/gh-action-pypi-publish@v1.10.2
-        with:
-          user: __token__
-          password: ${{ secrets.pypi_password }}
-          #repository_url: https://test.pypi.org/legacy/
+  #     - name: Publish wheels to PyPi
+  #       uses: pypa/gh-action-pypi-publish@v1.10.2
+  #       with:
+  #         user: __token__
+  #         password: ${{ secrets.pypi_password }}
+  #         #repository_url: https://test.pypi.org/legacy/

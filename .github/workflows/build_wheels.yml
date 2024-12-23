@@ -7,7 +7,7 @@ jobs:
     name: ${{ matrix.os }} • ${{ matrix.python }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13, macos-14]
         python: [cp37, cp38, cp39, cp310, cp311, cp312, pp37, pp38, pp39, pp310]
@@ -35,8 +35,8 @@ jobs:
         run: |
           if [[ ! "${{ github.ref }}" =~ ^refs/tags/ ]]; then
             BUILD_NUM=${{ github.run_number }}
-            VERSION=$(grep '^__version__ = ' ewave.py | sed -E 's/__version__ = "(.*)"/\1/')
-            sed -i -e "s/^__version__ = \"${VERSION}\"/__version__ = \"${VERSION}.dev${BUILD_NUM}\"/" ewave.py
+            VERSION=$(grep '^__version__ = ' quickspikes/__init__.py | sed -E 's/__version__ = "(.*)"/\1/')
+            sed -i -e "s/^__version__ = \"${VERSION}\"/__version__ = \"${VERSION}.dev${BUILD_NUM}\"/" quickspikes/__init__.py
           fi
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.22
@@ -66,8 +66,8 @@ jobs:
         run: |
           if [[ ! "${{ github.ref }}" =~ ^refs/tags/ ]]; then
             BUILD_NUM=${{ github.run_number }}
-            VERSION=$(grep '^__version__ = ' ewave.py | sed -E 's/__version__ = "(.*)"/\1/')
-            sed -i -e "s/^__version__ = \"${VERSION}\"/__version__ = \"${VERSION}.dev${BUILD_NUM}\"/" ewave.py
+            VERSION=$(grep '^__version__ = ' quickspikes/__init__.py | sed -E 's/__version__ = "(.*)"/\1/')
+            sed -i -e "s/^__version__ = \"${VERSION}\"/__version__ = \"${VERSION}.dev${BUILD_NUM}\"/" quickspikes/__init__.py
           fi
       - name: Build sdist
         run: pipx run build --sdist

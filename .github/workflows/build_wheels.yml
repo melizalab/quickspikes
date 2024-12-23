@@ -35,6 +35,7 @@ jobs:
         env:
           CIBW_BUILD: ${{ matrix.python }}-*
           CIBW_ARCHS_MACOS: auto
+          CIBW_SKIP: "pp39-manylinux_i686 pp310-manylinux_i686"
         with:
           package-dir: .
           output-dir: wheelhouse

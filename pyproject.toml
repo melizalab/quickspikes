@@ -2,22 +2,33 @@
 requires = ["setuptools", "wheel", "numpy>=1.19.5", "cython>=0.29"]
 
 [tool.ruff]
+line-length = 88
 target-version = "py37"
+extend-exclude = ["build", "attic"]
 
 [tool.ruff.lint]
 extend-select = [
-  "B",   # flake8-bugbear
-  "I",   # isort
-  "PGH", # pygrep-hooks
-  "RUF", # Ruff-specific
-  "UP",  # pyupgrade
-  "NPY201", # numpy 2.0
+    "F",  # pyflakes
+    "B",   # flake8-bugbear
+    "I",   # isort
+    "PGH", # pygrep-hooks
+    "RUF", # Ruff-specific
+    "UP",  # pyupgrade
+    "NPY201", # numpy 2.0
 ]
-
-[tool.mypy]
-ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 python_files = ["test_*.py", "*_test.py"]
 addopts = "-v --cov=quickspikes --cov-report=term-missing"
 testpaths = ["test"]
+
+[tool.black]
+line-length = 88
+target-version = ["py37"]
+include = '\.pyi?$'
+
+[tool.mypy]
+python_version = "3.8"
+ignore_missing_imports = true
+strict_optional = true
+check_untyped_defs = true

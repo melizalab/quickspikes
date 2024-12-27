@@ -21,10 +21,10 @@ quickspikes
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1246809.svg
    :target: https://doi.org/10.5281/zenodo.1246809
 
-This is a very basic but very fast window discriminator for detecting
+This is a very basic but fast window discriminator for detecting
 and extracting spikes in a time series. It was developed for analyzing
 extracellular neural recordings, but also works with intracellular data
-and probably many other kinds of time series.
+and probably other kinds of time series.
 
 Here’s how it works:
 
@@ -66,7 +66,7 @@ Or to build from a copy of the repository:
 To detect peaks, you instantiate the detector with parameters that match
 the events you want to detect, and then send the detector chunks of
 data. For example, an extracellular recording at 20 kHz stored in 16-bit
-integers may have a noise floor around 2000, and the spikes will be on
+integers may have noise with a peak-to-peak amplitude around 2000, and the spikes will be on
 the order of 20 samples wide:
 
 .. code:: python
@@ -96,6 +96,7 @@ compensate for shifts in the mean and standard deviation of the signal:
 
    reldet = qs.detector(2.5, 30)
    reldet.scale_thresh(samples.mean(), samples.std())
+   # (or just set .thresh property directly)
    times = reldet.send(samples)
 
 To detect negative-going events, you’ll need to invert the signal.

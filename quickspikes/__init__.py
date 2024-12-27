@@ -8,4 +8,4 @@ from .spikes import detector, peaks, subthreshold
 from .tools import filter_times, realign_spikes
 
 __version__ = "2.0.6"
-__all__ = ["detector", "peaks", "subthreshold", "realign_spikes", "filter_times"]
+__all__ = ["detector", "filter_times", "peaks", "realign_spikes", "subthreshold"]

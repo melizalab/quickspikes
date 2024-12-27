@@ -1,7 +1,8 @@
 # -*- mode: python -*-
+from pathlib import Path
+
 import numpy as np
 import pytest
-from pathlib import Path
 
 from quickspikes.intracellular import SpikeFinder, spike_shape
 from quickspikes.spikes import detector, find_run, peaks
@@ -9,9 +10,9 @@ from quickspikes.tools import (
     filter_times,
     peak_idx,
     realign_spikes,
+    runlength_encode,
     trim_waveforms,
     trough_idx,
-    runlength_encode
 )
 
 # a nice surrogate spike with 20 samples before peak and 40 after

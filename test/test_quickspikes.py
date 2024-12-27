@@ -1,6 +1,7 @@
 # -*- mode: python -*-
 import numpy as np
 import pytest
+from pathlib import Path
 
 from quickspikes.intracellular import SpikeFinder, spike_shape
 from quickspikes.spikes import detector, find_run, peaks
@@ -10,6 +11,7 @@ from quickspikes.tools import (
     realign_spikes,
     trim_waveforms,
     trough_idx,
+    runlength_encode
 )
 
 # a nice surrogate spike with 20 samples before peak and 40 after
@@ -106,9 +108,10 @@ def extrac_spikes():
 
 @pytest.fixture(params=["wide", "narrow"])
 def intrac_recording(request):
-    # a bit klunky
+    # a bit klunky - load some example data with known spike times
+    test_dir = Path(__file__).parent
     if request.param == "wide":
-        recording = np.load("test/intra_spike.npy")
+        recording = np.load(test_dir / "intra_spike.npy")
         times = [
             7635,
             8412,
@@ -133,7 +136,7 @@ def intrac_recording(request):
         ]
         takeoff = 24
     elif request.param == "narrow":
-        recording = np.load("test/intra_spike_narrow.npy")
+        recording = np.load(test_dir / "intra_spike_narrow.npy")
         times = [
             8325,
             8816,
@@ -213,6 +216,26 @@ def test_align_extrac_by_trough(extrac_spikes):
     apeak = aligned.argmin(-1)
     assert all(apeak == apeak[0])
     assert all(abs(times) <= jitter * upsample)
+
+
+def test_align_invalid_upsample(extrac_spikes):
+    nevents, npoints = extrac_spikes.shape
+    with pytest.raises(ValueError):
+        times, aligned = realign_spikes(
+            np.zeros(nevents),
+            extrac_spikes,
+            upsample=1.5,
+            jitter=3,
+            align_by=trough_idx,
+        )
+    with pytest.raises(ValueError):
+        times, aligned = realign_spikes(
+            np.zeros(nevents),
+            extrac_spikes,
+            upsample=-2,
+            jitter=3,
+            align_by=trough_idx,
+        )
 
 
 def test_detect_intrac_spikes(intrac_recording):
@@ -336,3 +359,10 @@ def test_no_run():
     a = np.zeros(20)
     a[10:14] = 1
     assert find_run(a, thresh=0, min_run=5) is None
+
+
+def test_runlength_empty_array():
+    n, p, v = runlength_encode([])
+    assert n is None
+    assert p is None
+    assert v is None

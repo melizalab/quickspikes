@@ -16,3 +16,8 @@ extend-select = [
 
 [tool.mypy]
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+python_files = ["test_*.py", "*_test.py"]
+addopts = "-v --cov=quickspikes --cov-report=term-missing"
+testpaths = ["test"]

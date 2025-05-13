@@ -17,11 +17,6 @@ extend-select = [
     "NPY201", # numpy 2.0
 ]
 
-[tool.pytest.ini_options]
-python_files = ["test_*.py", "*_test.py"]
-addopts = "-v --cov=quickspikes --cov-report=term-missing"
-testpaths = ["test"]
-
 [tool.black]
 line-length = 88
 target-version = ["py37"]

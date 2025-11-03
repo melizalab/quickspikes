@@ -9,14 +9,12 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
-        python: [cp38, cp39, cp310, cp311, cp312, cp313, pp39, pp310]
+        os: [ubuntu-latest, windows-latest, macos-15-intel, macos-latest]
+        python: [cp38, cp39, cp310, cp311, cp312, cp313, cp314, pp311]
         exclude:
           # Skip PyPy on Windows
           - os: windows-latest
-            python: pp39
-          - os: windows-latest
-            python: pp310
+            python: pp311
     steps:
       - uses: actions/checkout@v5
       - name: Set version suffix for TestPyPI
@@ -24,8 +22,8 @@ jobs:
         run: |
           if [[ ! "${{ github.ref }}" =~ ^refs/tags/ ]]; then
             BUILD_NUM=${{ github.run_number }}
-            VERSION=$(grep '^__version__ = ' quickspikes/__init__.py | sed -E 's/__version__ = "(.*)"/\1/')
-            sed -i -e "s/^__version__ = \"${VERSION}\"/__version__ = \"${VERSION}.dev${BUILD_NUM}\"/" quickspikes/__init__.py
+            VERSION=$(grep '^version = ' pyproject.toml | sed -E 's/version = "(.*)"/\1/')
+            sed -i -e "s/^version = \"${VERSION}\"/version = \"${VERSION}.dev${BUILD_NUM}\"/" pyproject.toml
           fi
         shell: bash
       - name: Build wheels

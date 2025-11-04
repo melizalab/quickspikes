@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quickspikes"
 version = "2.0.7"
-description = "Advanced Recording Format Tools"
+description = "detect and extract spikes in time series data"
 readme = "README.rst"
 requires-python = ">=3.9"
 license = { text = "BSD-3-Clause" }
@@ -19,12 +19,12 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.7",    
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",    
     "Topic :: Scientific/Engineering",

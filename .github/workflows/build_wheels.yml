@@ -55,8 +55,8 @@ jobs:
         run: |
           if [[ ! "${{ github.ref }}" =~ ^refs/tags/ ]]; then
             BUILD_NUM=${{ github.run_number }}
-            VERSION=$(grep '^__version__ = ' quickspikes/__init__.py | sed -E 's/__version__ = "(.*)"/\1/')
-            sed -i -e "s/^__version__ = \"${VERSION}\"/__version__ = \"${VERSION}.dev${BUILD_NUM}\"/" quickspikes/__init__.py
+            VERSION=$(grep '^version = ' pyproject.toml | sed -E 's/version = "(.*)"/\1/')
+            sed -i -e "s/^version = \"${VERSION}\"/version = \"${VERSION}.dev${BUILD_NUM}\"/" pyproject.toml
           fi
       - name: Build sdist
         run: pipx run build --sdist

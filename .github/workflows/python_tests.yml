@@ -23,9 +23,6 @@ jobs:
         version: "latest"
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      env:
-        DJANGO_VERSION: ${{ matrix.django-version }}
-        NUMPY_VERSION: ${{ matrix.numpy-version }}
       run: uv sync --frozen
     - name: Run tests on python ${{ matrix.python-version }}
       run: uv run pytest        

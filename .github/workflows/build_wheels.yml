@@ -16,7 +16,7 @@ jobs:
           - os: windows-latest
             python: pp311
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set version suffix for TestPyPI
         id: set_version
         run: |
@@ -49,7 +49,7 @@ jobs:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set version suffix for TestPyPI
         id: set_version
         run: |

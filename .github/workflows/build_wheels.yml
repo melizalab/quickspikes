@@ -40,7 +40,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: git diff --exit-code
         shell: bash
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: artifact-${{ matrix.os }}-${{ matrix.python }}
           path: ./wheelhouse/*.whl
@@ -61,7 +61,7 @@ jobs:
       - name: Build sdist
         run: pipx run build --sdist
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: artifact-source
           path: dist/*.tar.gz
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Merge artifacts
-        uses: actions/upload-artifact/merge@v5
+        uses: actions/upload-artifact/merge@v6
         with:
           name: all-files
           pattern: artifact-*

@@ -1,8 +1,9 @@
 # -*- mode: python -*-
 """specialized functions for intracellular data"""
+
 import logging
 from collections import namedtuple
-from typing import Iterator, Optional, Tuple
+from collections.abc import Iterator
 
 import numpy as np
 
@@ -34,7 +35,7 @@ def spike_shape(
     deriv_thresh: float = 10.0,
     t_baseline: float = 2.0,
     min_rise: float = 0.25,
-) -> Optional[Spike]:
+) -> Spike | None:
     """Computes spike shape features:
 
     takeoff: the voltage/time when the derivative of the waveform exceeds
@@ -142,7 +143,7 @@ class SpikeFinder:
         thresh_rel: float = 0.35,
         thresh_min: float = -50,
         deriv_thresh: float = 10.0,
-    ) -> Optional[Spike]:
+    ) -> Spike | None:
         """Calculate the detection threshold from the amplitude of the first spike in V.
 
         If no spike can be detected in the signal, returns None. Otherwise, the
@@ -180,7 +181,7 @@ class SpikeFinder:
 
     def extract_spikes(
         self, V: np.ndarray, *, min_amplitude: float, upsample: int = 2, jitter: int = 4
-    ) -> Iterator[Tuple[int, np.ndarray]]:
+    ) -> Iterator[tuple[int, np.ndarray]]:
         """Detect and extract spikes from V.
 
         V: input signal

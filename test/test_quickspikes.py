@@ -3,9 +3,9 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from quickspikes.spikes import detector, find_run, peaks
 
 from quickspikes.intracellular import SpikeFinder, spike_shape
-from quickspikes.spikes import detector, find_run, peaks
 from quickspikes.tools import (
     filter_times,
     peak_idx,
@@ -190,7 +190,7 @@ def test_extract_spikes(extrac_recording, extrac_times):
 def test_align_extrac_by_peak(extrac_spikes):
     upsample = 3
     jitter = 3
-    nevents, npoints = extrac_spikes.shape
+    nevents, _npoints = extrac_spikes.shape
     times, aligned = realign_spikes(
         np.zeros(nevents),
         extrac_spikes,
@@ -206,7 +206,7 @@ def test_align_extrac_by_peak(extrac_spikes):
 def test_align_extrac_by_trough(extrac_spikes):
     upsample = 3
     jitter = 3
-    nevents, npoints = extrac_spikes.shape
+    nevents, _npoints = extrac_spikes.shape
     times, aligned = realign_spikes(
         np.zeros(nevents),
         extrac_spikes,
@@ -220,9 +220,9 @@ def test_align_extrac_by_trough(extrac_spikes):
 
 
 def test_align_invalid_upsample(extrac_spikes):
-    nevents, npoints = extrac_spikes.shape
+    nevents, _npoints = extrac_spikes.shape
     with pytest.raises(ValueError):
-        times, aligned = realign_spikes(
+        _times, _aligned = realign_spikes(
             np.zeros(nevents),
             extrac_spikes,
             upsample=1.5,
@@ -230,7 +230,7 @@ def test_align_invalid_upsample(extrac_spikes):
             align_by=trough_idx,
         )
     with pytest.raises(ValueError):
-        times, aligned = realign_spikes(
+        _times, _aligned = realign_spikes(
             np.zeros(nevents),
             extrac_spikes,
             upsample=-2,
@@ -254,7 +254,7 @@ def test_align_spikes(intrac_recording):
     assert all(apeak == apeak[0])
     # times should have shifted no more than jitter
     assert len(times) == aln_times.size
-    for t1, t2 in zip(times, aln_times):
+    for t1, t2 in zip(times, aln_times, strict=True):
         assert abs(t1 - t2 // 3) <= jitter
 
 
@@ -304,7 +304,7 @@ def test_intrac_onset(intrac_recording):
 
 
 def test_intrac_no_onset(intrac_recording):
-    recording, times, takeoff = intrac_recording
+    recording, times, _takeoff = intrac_recording
     spike = peaks(recording, times[:1], n_before=20, n_after=100)[0]
     shape = spike_shape(spike, dt=1, t_baseline=80, min_rise=13)
     assert shape.takeoff_t is None
@@ -342,7 +342,7 @@ def test_no_spikes():
 
 def test_thresh_for_max_at_edge_of_signal(intrac_recording):
     """calculate_threshold should ignore spikes that are too close to the edge of the signal"""
-    recording, times, takeoff = intrac_recording
+    recording, times, _takeoff = intrac_recording
     detector = SpikeFinder(50, 350, 5000)
     clip = times[0] - 300
     _ = detector.calculate_threshold(recording[clip:])

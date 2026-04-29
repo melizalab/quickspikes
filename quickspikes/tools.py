@@ -4,16 +4,17 @@
 Copyright (C) 2013 Dan Meliza <dmeliza@gmail.com>
 Created Fri Jul 12 14:05:16 2013
 """
-from typing import Callable, Iterable, Iterator, Optional, Tuple, Union
+
+from collections.abc import Callable, Iterable, Iterator
 
 import numpy as np
 
-numeric = Union[int, float, np.number]
+numeric = int | float | np.number
 
 
 def filter_times(
     times: Iterable[numeric], min: numeric, max: numeric
-) -> Tuple[numeric]:
+) -> tuple[numeric]:
     return tuple(t for t in times if (t > min) and (t < max))
 
 
@@ -39,10 +40,10 @@ def realign_spikes(
     spikes: np.ndarray,
     *,
     upsample: int = 1,
-    align_by: Callable[[np.ndarray], Union[np.ndarray, int]] = peak_idx,
+    align_by: Callable[[np.ndarray], np.ndarray | int] = peak_idx,
     jitter: int = 3,
-    expected_peak: Optional[int] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+    expected_peak: int | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
     """Realign spikes to their peaks (or some other feature) using bandwidth-limited resampling
 
     times    : one-dimensional array of spike times, in units of samples
@@ -114,7 +115,7 @@ def fftresample(S: np.ndarray, npoints: int, *, reflect: bool = False) -> np.nda
 
 def trim_waveforms(
     spikes: Iterable[np.ndarray], times: Iterable[int], *, peak_t: int, n_rise: int
-) -> Iterator[Tuple[int, np.ndarray]]:
+) -> Iterator[tuple[int, np.ndarray]]:
     """Trims spike waveforms to remove overlapping peaks.
 
     The peaks() function is used to extract waveforms in a window surrounding
@@ -135,7 +136,7 @@ def trim_waveforms(
 
     """
     diffs = np.diff(times)
-    for t, dt, s in zip(times, diffs, spikes):
+    for t, dt, s in zip(times, diffs, spikes, strict=False):
         i_last = min(
             peak_t + dt - n_rise,
             # s[peak_t:].argmin() + peak_t,
@@ -148,7 +149,7 @@ def trim_waveforms(
     yield times[-1], s[: s.size]
 
 
-def runlength_encode(arr: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def runlength_encode(arr: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Run length encoding of arr. Returns (runlengths, startpositions, values)"""
     # from stackoverflow 1066758
     n = len(arr)

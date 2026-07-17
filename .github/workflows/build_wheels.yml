@@ -3,7 +3,9 @@ on:
   push:
     branches:
       - master
-
+    tags:
+      - 'v*'
+      
 jobs:
   build_wheels:
     name: ${{ matrix.os }} • ${{ matrix.python }}

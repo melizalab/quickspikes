@@ -82,3 +82,9 @@ manylinux-x86_64-image = "manylinux2014"
 manylinux-i686-image = "manylinux2014"
 # enable pypy builds - no longer on by default
 enable = "pypy"
+
+[[tool.cibuildwheel.overrides]]
+select = "*-manylinux*"
+before-all = "yum install -y devtoolset-11-gcc devtoolset-11-gcc-c++ && source /opt/rh/devtoolset-11/enable"
+environment = { CC = "/opt/rh/devtoolset-11/root/usr/bin/gcc", CXX = "/opt/rh/devtoolset-11/root/usr/bin/g++" }
+

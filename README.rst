@@ -13,14 +13,14 @@ quickspikes
 .. _BuildStatus: https://github.com/melizalab/quickspikes/actions/workflows/python_tests.yml
 
 .. |License| image:: https://img.shields.io/pypi/l/quickspikes.svg
-.. _License: https://opensource.org/license/gpl-3-0/
+.. _License: https://opensource.org/license/bsd-3-clause
 
 .. |PythonVersions| image:: https://img.shields.io/pypi/pyversions/quickspikes.svg
 .. _PythonVersions: https://pypi.python.org/pypi/quickspikes/
 
-.. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1246809.svg
-   :target: https://doi.org/10.5281/zenodo.1246809
-
+.. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.17517932.svg
+   :target: https://doi.org/10.5281/zenodo.17517932
+	    
 This is a very basic but fast window discriminator for detecting
 and extracting spikes in a time series. It was developed for analyzing
 extracellular neural recordings, but also works with intracellular data

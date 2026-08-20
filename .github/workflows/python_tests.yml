@@ -3,10 +3,8 @@
 
 name: Python tests
 on:
+  workflow_dispatch:
   pull_request:
-  push:
-    branches:
-      - master
 
 jobs:
   # lint is independent of python version and of the compiled extension, so it

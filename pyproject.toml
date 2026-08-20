@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quickspikes"
-version = "2.0.7"
+version = "2.0.8"
 description = "detect and extract spikes in time series data"
 readme = "README.rst"
 requires-python = ">=3.10"
